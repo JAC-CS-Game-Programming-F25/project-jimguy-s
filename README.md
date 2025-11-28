@@ -38,10 +38,6 @@ Failure is permanent, as the game embraces traditional roguelike permadeath. A s
 
 The player will be able to:
 
-## 📃 Requirements
-
-The player will be able to:
-
 1. View the title screen upon launching the game.
 2. Select "Start Game" from the title screen to begin a new run.
 3. Select "Instructions" from the title screen to view game controls and objectives.
@@ -107,12 +103,9 @@ The player will be able to:
 
 ### 🗺️ Class Diagram
 
-![Class Diagram](./assets/images/My ClassDiagram.png)
+![Class Diagram](./assets/images/MyClassDiagram.png)
 
 ### 🧵 Wireframes
-
-> [!note]
-> Your wireframes don't have to be super polished. They can even be black/white and hand drawn. I'm just looking for a rough idea about what you're visualizing.
 
 add here when done
 
@@ -122,7 +115,6 @@ All game assets are sourced from the **Ninja Adventure Asset Pack** by pixel-boy
 
 **Asset Pack:** [Ninja Adventure - Asset Pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack)
 
-**License:** Creative Commons Zero (CC0) - Free to use, modify, and distribute in commercial and personal projects. Attribution not required but appreciated.
 
 ### 🖼️ Graphics
 
@@ -130,14 +122,14 @@ All game assets are sourced from the **Ninja Adventure Asset Pack** by pixel-boy
 
 - 50+ character sprites with animations (player ninja, enemies, bosses)
 - 30+ monster sprites with animations
-- 9 boss sprites with animations
+- 9 boss sprites with animations (Will only use 1)
 - Player animations: idle, walk, attack, hit, death
 - Enemy animations: walk, attack, hit, death
 - Boss animations: multiple attack patterns, phase transitions
 
 **Environment:**
 
-- Complete tileset for dungeon floors, walls, and decorations
+- Complete tileset for floors, walls, and decorations
 - 30+ visual effects (hit effects, death animations, particles)
 - UI elements (buttons, panels, health bars)
 
@@ -174,8 +166,7 @@ The asset pack includes 2 fonts suitable for UI and text display. Additional fon
 
 ### 📚 Credits
 
-- **Art and Audio:** pixel-boy and contributors
-- **Asset Pack License:** Creative Commons Zero (CC0)
+- **Art and Audio:** pixel-boy and his contributors
 - **Asset Pack** [Ninja Adventure - Asset Pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack)
 
 ---
