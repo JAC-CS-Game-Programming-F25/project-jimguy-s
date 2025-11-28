@@ -1,117 +1,181 @@
 # Final Project
 
--   [ ] Read the [project requirements](https://vikramsinghmtl.github.io/420-5P6-Game-Programming/project/requirements).
--   [ ] Replace the sample proposal below with the one for your game idea.
--   [ ] Get the proposal greenlit by Vik.
--   [ ] Place any assets in `assets/` and remember to update `src/config.json`.
--   [ ] Decide on a height and width inside `src/globals.js`. The height and width will most likely be determined based on the size of the assets you find.
--   [ ] Start building the individual components of your game, constantly referring to the proposal you wrote to keep yourself on track.
--   [ ] Good luck, you got this!
+- [ ] Read the [project requirements](https://vikramsinghmtl.github.io/420-5P6-Game-Programming/project/requirements).
+- [ ] Replace the sample proposal below with the one for your game idea.
+- [ ] Get the proposal greenlit by Vik.
+- [ ] Place any assets in `assets/` and remember to update `src/config.json`.
+- [ ] Decide on a height and width inside `src/globals.js`. The height and width will most likely be determined based on the size of the assets you find.
+- [ ] Start building the individual components of your game, constantly referring to the proposal you wrote to keep yourself on track.
+- [ ] Good luck, you got this!
 
 ---
 
-# Sample Proposal - Pokémon the Trading Card Game
-
-> [!note]
-> This was taken from a project I did in university so the scope is **much** larger than what I'm expecting from you in terms of number of features!
+# Proposal - Blades of the Dune
 
 ## ✒️ Description
 
-In this turn-based battle card game, players assume the role of a Pokémon trainer and use their Pokémon to battle their opponent's Pokémon. Players play Pokémon to the field and attack their opponent's Pokémon. A Pokémon that has sustained enough damage is Knocked Out, and the player who knocked it out draws a Prize card. There are usually six Prize cards, and the primary win condition is to draw all of them. Other ways to win are by knocking out all the Pokémon the opponent has on the field so that the opponent has none left, or if at the beginning of their opponent's turn there are no cards left to draw in the opponent's deck.
+Blades of the Dune is a top-down action roguelike set in the heart of a vast and ancient desert. Players control a wandering ninja who enters the sun-scorched ruins of a forgotten temple in search of a mythical artifact buried beneath the dunes. Legends say the relic holds the power to control the desert winds, but it is fiercely guarded by cursed warriors, ancient traps, and a ruthless warlord who rules the buried temple.
+
+Each run challenges the player to push deeper into a procedurally generated dungeon made up of dusty chambers, hidden passages, and crumbling ruins. No two attempts will ever be the same. Enemy layouts, loot, traps, room shapes, and the order of areas are reshuffled every time.
+
+As a fast and agile ninja, players must slash through enemies, dodge traps, collect power-ups, and adapt to the unpredictability of each floor. The deeper the player travels, the harsher the environment becomes: stronger foes emerge, enemy attack patterns evolve, and hazard density increases.
+
+The game blends roguelike replayability, fast-paced ninja combat, and desert-themed dungeon exploration to deliver a short, replayable, and satisfying challenge. The ultimate goal is to defeat the Warlord of the Dunes and escape the collapsing temple, but one mistake and its all over.
 
 ## 🕹️ Gameplay
 
-Players begin by having one player select heads or tails, and the other flips a coin; the winner of the coin flip will decide who goes first or second. The player going first cannot attack their first turn, unless the card says otherwise. (Dice may be used in place of coins, with even numbers representing heads and odd numbers representing tails). Players then shuffle their decks and draw seven cards, then play one Basic Pokémon onto the field. This Pokémon is known as the Active Pokémon and is usually the one that attacks and receives damage. If a player does not have any Basic Pokémon, they must shuffle and draw a new hand, and the opponent may draw one additional card. Once both players have at least one Basic Pokémon, they can play up to five more Basic Pokémon onto their "Bench" (representing the maximum-carry limit of six from the video games). Players then take the top six cards of their deck and place them to the side as Prize Cards. Play then begins with the player who won the coin flip.
+In Blades of the Dune, the player navigates room by room through an ever-changing dungeon buried beneath the sands. Each chamber the ninja enters is sealed behind them, turning every encounter into a contained challenge that must be resolved before they can advance. Enemies awakenfrom beneath the dust, or wander the halls until the player intrudes on their territory. Once all threats in a room are eliminated, the final door slides open, granting passage to the next chamber.
 
-Play alternates between players who may take several actions during their turn, including playing new Basic Pokémon, evolving their Pokémon, playing Trainer cards and Energy cards, and using Pokémon Abilities. A player may also retreat their Active Pokémon, switching the Active Pokémon with one on the Bench. At the end of their turn, a player may use one of their Active Pokémon's attacks, provided the prerequisite amount and types of Energy are attached to that Pokémon. Effects from that attack are then activated and damage may be placed on the Defending Pokémon; some attacks simply have effects but do not do damage. Damage may be modified depending on whether the defender has a weakness or a resistance to the attacker's Pokémon type. If the final damage exceeds the defending Pokémon's HP, it is Knocked Out, and the active player takes a prize card and ends their turn.
+Movement is fluid, allowing the ninja to dart across the room, weave around hazards, and close the distance on enemies. Combat is intentionally simple but sharp: a light, fast sword strike forms the core of the player’s offensive ability, rewarding positioning and timing rather than button-mashing. Different enemies demand different reactions, stronger variants appear deeper in the dungeon forcing players to constantly reassess their surroundings.
 
-This implementation of _Pokémon the Trading Card Game_ is a single player experience with an AI. The game is played primarily with the mouse to interact with the cards and general GUI. The players can optionally hit `M` on their keyboard to mute all game sounds.
+As the player progresses, the atmosphere becomes increasingly tense. Rooms grow more compact, traps appear more frequently, and enemy groups become larger and more aggressive. Along the way, the player may come across small opportunities to recover or strengthen themselves: a stray potion left behind by a fallen explorer, an ancient relic humming with power. These moments break up the intensity of combat and add just enough unpredictability to make each run feel distinct.
+
+Reaching the later chambers culminates in encounters with powerful opponents, including a boss that acts as the final battle. This marks the ultimate test, one that requires careful use of movement, timing, and any temporary power-ups acquired along the way.
+
+Failure is permanent, as the game embraces traditional roguelike permadeath. A single mistake sends the player back to the entrance, but the knowledge gained from previous attempts—enemy patterns, traps, strategies remains with them. Scores are tracked across runs, encouraging players to refine their mastery of the dungeon. The appeal lies not just in reaching the end, but in gradually pushing farther with each attempt, learning the rhythm of the desert and the dangers that lurk beneath it.
 
 ## 📃 Requirements
 
-> [!note]
-> This was a web project so that's why you'll see requirements about logging in and uploading data which for you is irrelevant. Focus more on the requirements describing actions taken for gameplay.
+The player will be able to:
 
-1. The user shall register to be able to login.
-2. The user shall login to be able to play a game.
-3. The user shall upload a valid deck file.
-4. The user shall upload a valid cards file.
-5. The user shall upload a valid abilities file.
-6. The user shall select which deck they will use in the game.
-7. The user shall select which deck the AI will use in the game.
-8. The system shall "flip a coin" to decide which player goes first.
-9. The system shall shuffle the user's deck.
-10. The system shall draw the top 7 cards from the user's deck.
-11. If the user does not have a Basic Pokémon in their hand the system shall "mulligan" until they do.
-12. Upon each mulligan, the AI shall draw a card.
-13. The user shall put one of their Basic Pokémon face down as their Active Pokémon.
-14. The user shall put up to 5 more Basic Pokémon face down on their Bench.
-15. Upon a new turn, the system shall draw a card from the deck of the current player.
-16. Upon a new turn, the system shall place the drawn card in the hand of the current player.
-17. The user shall put (up to 5 total) Basic Pokémon cards from their hand onto their Bench.
-18. The user shall Evolve their Pokémon as many times as they choose.
-19. The user shall attach an Energy card from their hand to one of their Pokémon once per turn.
-20. The user shall play Trainer cards (as many as they want, but only one Supporter card and one Stadium card per turn).
-21. The user shall Retreat their Active Pokémon once per turn.
-22. The user shall use as many Abilities as they choose.
-23. The user shall attack the opponent's Active Pokémon.
-24. After a player attacks, the system shall end their turn and start their opponent's turn.
-25. The system shall execute any "special conditions" after a turn is over.
-26. The user shall pick a Victory Card when the opposing Active Pokémon dies.
+## 📃 Requirements
 
-### 🤖 State Diagram
+The player will be able to:
 
-> [!note]
-> Remember that you'll need diagrams for not only game states but entity states as well.
+1. View the title screen upon launching the game.
+2. Select "Start Game" from the title screen to begin a new run.
+3. Select "Instructions" from the title screen to view game controls and objectives.
+4. View the instructions screen showing WASD/Arrow controls for movement, Spacebar for attack, and ESC for pause.
+5. View the game objective on the instructions screen (fight through rooms, defeat enemies, reach and defeat boss in Room 10).
+6. Return to the title screen from the instructions screen by selecting "Back to Menu".
+7. Select "High Scores" from the title screen to view the best score achieved.
+8. View the highest score persisted from previous game sessions on the high scores screen.
+9. Return to the title screen from the high scores screen by selecting "Back to Menu".
+10. Enter the first procedurally generated room (Room 1) when starting a new game.
+11. View the room number, current health, and score on the HUD during gameplay.
+12. Move the ninja character in four directions (up, down, left, right) using WASD or Arrow Keys.
+13. Attack enemies with a sword by pressing Spacebar, dealing damage in the direction faced.
+14. Take damage when hit by enemy attacks, reducing health displayed on the HUD.
+15. See Enemies in the room when entering.
+16. Observe the room's exit door remain locked while enemies are present.
+17. Fight and defeat enemies in the current room.
+18. See health potions drop from defeated enemies with a random chance (30%).
+19. See damage boost items drop from defeated enemies with a random chance (15%).
+20. Collect health potions by walking over them to restore HP.
+21. Collect damage boost items by walking over them to permanently increase attack damage.
+22. View updated health on the HUD after collecting a health potion.
+23. Gain score points for each enemy defeated.
+24. View the updated score on the HUD after defeating enemies.
+25. See the exit door unlock when all enemies in the room are defeated.
+26. Progress to the next procedurally generated room through the unlocked door.
+27. Experience increasing difficulty as room number increases.
+28. Encounter the final boss in Room 10 with unique multi-phase behavior.
+29. Defeat the final boss to achieve victory.
+30. Pause the game at any time by pressing ESC.
+31. View the pause menu with options to resume, view instructions, or quit to main menu.
+32. Resume gameplay from the pause menu by selecting "Resume Game".
+33. Access instructions from the pause menu by selecting "Instructions".
+34. Return to the title screen from the pause menu by selecting "Main Menu".
+35. See the Game Over screen when player health reaches 0.
+36. View final score on the Game Over screen.
+37. Select "Try Again" from the Game Over screen to start a new run.
+38. Select "Main Menu" from the Game Over screen to return to the title screen.
+39. See the Victory screen when the final boss is defeated.
+40. View final score on the Victory screen.
+41. See if the current score becomes the new high score (if it exceeds the previous best).
+42. Select "Play Again" from the Victory screen to start a new run.
+43. Select "Main Menu" from the Victory screen to return to the title screen.
+44. Have high score persisted across game sessions using localStorage.
 
-![State Diagram](./assets/images/StateDiagram.png)
+### 🤖 Diagrams
+
+### Game States (Global State Machine)
+
+![State Diagram](./assets/images/GameStateDiagram.png)
+
+### Player States
+
+![State Diagram](./assets/images/PlayerStateDiagram.png)
+
+### Enemy States
+
+![State Diagram](./assets/images/EnemyStateDiagram.png)
+
+### Boss States
+
+![State Diagram](./assets/images/BossStateDiagram.png)
 
 ### 🗺️ Class Diagram
 
-![Class Diagram](./assets/images/ClassDiagram.png)
+![Class Diagram](./assets/images/My ClassDiagram.png)
 
 ### 🧵 Wireframes
 
 > [!note]
 > Your wireframes don't have to be super polished. They can even be black/white and hand drawn. I'm just looking for a rough idea about what you're visualizing.
 
-![Main Menu](./assets/images/Main-Menu.png)
+add here when done
 
--   _Let's Play_ will navigate to the main game.
--   _Upload Cards_ will navigation to the forms for uploading and parsing the data files for the game.
--   _Change Log_ will navigate the user to a page with a list of features/changes that have been implemented throughout the development of the game.
+## 🎨 Assets
 
-![Game Board](./assets/images/Game-Board.png)
+All game assets are sourced from the **Ninja Adventure Asset Pack** by pixel-boy, available on itch.io.
 
-We want to keep the GUI as simple and clear as possible by having cards with relevant images to act as a way for the user to intuitively navigate the game. We want to implement a layout that would look like as if one were playing a match of the Pokémon Trading Card Game with physical cards in real life. Clicking on any of the cards will reveal that card's details to the player.
+**Asset Pack:** [Ninja Adventure - Asset Pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack)
 
-### 🎨 Assets
+**License:** Creative Commons Zero (CC0) - Free to use, modify, and distribute in commercial and personal projects. Attribution not required but appreciated.
 
-We used [app.diagrams.net](https://app.diagrams.net/) to create the wireframes. Wireframes are the equivalent to the skeleton of a web app since they are used to describe the functionality of the product and the users experience.
+### 🖼️ Graphics
 
-We plan on following trends already found in other trading card video games, such as Pokémon Trading Card Game Online, Hearthstone, Magic the Gathering Arena, and Gwent.
+**Characters & Animations:**
 
-The GUI will be kept simple and playful, as to make sure the game is easy to understand what each component does and is, as well as light hearted to keep to the Pokémon theme.
+- 50+ character sprites with animations (player ninja, enemies, bosses)
+- 30+ monster sprites with animations
+- 9 boss sprites with animations
+- Player animations: idle, walk, attack, hit, death
+- Enemy animations: walk, attack, hit, death
+- Boss animations: multiple attack patterns, phase transitions
 
-#### 🖼️ Images
+**Environment:**
 
--   Most images will be used from the well known community driven wikipedia site, [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Main_Page).
--   Especially their [Trading Card Game section](<https://bulbapedia.bulbagarden.net/wiki/Full_Art_card_(TCG)>).
+- Complete tileset for dungeon floors, walls, and decorations
+- 30+ visual effects (hit effects, death animations, particles)
+- UI elements (buttons, panels, health bars)
 
-#### ✏️ Fonts
+**Items:**
 
-For fonts, a simple sans-serif like Roboto will look quite nice. It's a font that is legible, light on storage size, and fun to keep with the theme we're going for. We also used a more cartoonish Pokemon font for the title screen.
+- 60+ item sprites (potions, keys, power-ups)
 
--   [Pokemon](https://www.dafont.com/pokemon.font)
--   [Roboto](https://fonts.google.com/specimen/Roboto)
+### ✏️ Fonts
 
-#### 🔊 Sounds
+The asset pack includes 2 fonts suitable for UI and text display. Additional fonts may be sourced from:
 
-All sounds were taken from [freesound.org](https://freesound.org) for the actions pertaining to cards.
+- [Google Fonts](https://fonts.google.com/)
+- [DaFont](https://www.dafont.com/)
 
--   [Shuffle cards](https://freesound.org/people/VKProduktion/sounds/217502/)
--   [Flip card](https://freesound.org/people/Splashdust/sounds/84322/)
+### 🔊 Audio
 
-### 📚 References
+**Sound Effects (Included with Sprite Pack):**
 
--   [Pokemon Rulebook](http://assets.pokemon.com/assets/cms2/pdf/trading-card-game/rulebook/xy8-rulebook-en.pdf)
+- Attack sounds (sword swing, hit impact)
+- Footstep sounds
+- Item pickup sounds
+- Damage/hurt sounds
+- Door unlock sounds
+- Enemy death sounds
+- UI interaction sounds
+
+**Music (Included with Sprite Pack):**
+
+- Title screen music
+- Gameplay/dungeon exploration music
+- Boss battle music
+- Victory fanfare
+- Game over music
+
+### 📚 Credits
+
+- **Art and Audio:** pixel-boy and contributors
+- **Asset Pack License:** Creative Commons Zero (CC0)
+- **Asset Pack** [Ninja Adventure - Asset Pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack)
+
+---
