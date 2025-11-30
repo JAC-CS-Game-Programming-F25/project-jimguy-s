@@ -52,8 +52,8 @@ The player will be able to:
 12. Move the ninja character in four directions (up, down, left, right) using WASD or Arrow Keys.
 13. Attack enemies with a sword by pressing Spacebar, dealing damage in the direction faced.
 14. Take damage when hit by enemy attacks, reducing health displayed on the HUD.
-15. See Enemies in the room when entering.
-16. Observe the room's exit door remain locked while enemies are present.
+15. See enemies in the room when entering.
+16. Observe invisible barriers blocking exit passages while enemies are present.
 17. Fight and defeat enemies in the current room.
 18. See health potions drop from defeated enemies with a random chance (30%).
 19. See damage boost items drop from defeated enemies with a random chance (15%).
@@ -62,10 +62,10 @@ The player will be able to:
 22. View updated health on the HUD after collecting a health potion.
 23. Gain score points for each enemy defeated.
 24. View the updated score on the HUD after defeating enemies.
-25. See the exit door unlock when all enemies in the room are defeated.
-26. Progress to the next procedurally generated room through the unlocked door.
+25. See the barriers at room exits disappear when all enemies are defeated.
+26. Progress to the next procedurally generated room through the open passages.
 27. Experience increasing difficulty as room number increases.
-28. Encounter the final boss in Room 10 with unique multi-phase behavior.
+28. Encounter the final boss in Room 10 (stronger enemy with more health and damage).
 29. Defeat the final boss to achieve victory.
 30. Pause the game at any time by pressing ESC.
 31. View the pause menu with options to resume, view instructions, or quit to main menu.
@@ -87,34 +87,39 @@ The player will be able to:
 
 ### Game States (Global State Machine)
 
-![State Diagram](./assets/images/GameStateDiagram.png)
+![State Diagram](./assets/images/GameDiagram.png)
 
 ### Player States
 
-![State Diagram](./assets/images/PlayerStateDiagram.png)
+![State Diagram](./assets/images/PlayerDiagram.png)
 
 ### Enemy States
 
-![State Diagram](./assets/images/EnemyStateDiagram.png)
+![State Diagram](./assets/images/EnemyDiagram.png)
 
 ### Boss States
 
-![State Diagram](./assets/images/BossStateDiagram.png)
+![State Diagram](./assets/images/BossDiagram.png)
 
 ### 🗺️ Class Diagram
 
-![Class Diagram](./assets/images/MyClassDiagram.png)
+![Class Diagram](./assets/images/ClassDiagram.png)
 
 ### 🧵 Wireframes
 
-add here when done
+![Wireframe](./assets/images/MenuWireframe.png)
+![Wireframe](./assets/images/InstructionWireframe.png)
+![Wireframe](./assets/images/HighScoreWireframe.png)
+![Wireframe](./assets/images/GameWireframe.png)
+![Wireframe](./assets/images/PausedWireframe.png)
+![Wireframe](./assets/images/VictoryWireframe.png)
+![Wireframe](./assets/images/GameOverWireframe.png)
 
 ## 🎨 Assets
 
 All game assets are sourced from the **Ninja Adventure Asset Pack** by pixel-boy, available on itch.io.
 
 **Asset Pack:** [Ninja Adventure - Asset Pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack)
-
 
 ### 🖼️ Graphics
 
