@@ -157,7 +157,6 @@ The asset pack includes 2 fonts suitable for UI and text display. Additional fon
 - Footstep sounds
 - Item pickup sounds
 - Damage/hurt sounds
-- Door unlock sounds
 - Enemy death sounds
 - UI interaction sounds
 
