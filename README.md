@@ -42,7 +42,7 @@ The player will be able to:
 2. Select "Start Game" from the title screen to begin a new run.
 3. Select "Instructions" from the title screen to view game controls and objectives.
 4. View the instructions screen showing WASD/Arrow controls for movement, Spacebar for attack, and ESC for pause.
-5. View the game objective on the instructions screen (fight through rooms, defeat enemies, reach and defeat boss in Room 10).
+5. View the game objective on the instructions screen (fight through rooms, defeat enemies, reach and defeat boss in Room 5).
 6. Return to the title screen from the instructions screen by selecting "Back to Menu".
 7. Select "High Scores" from the title screen to view the best score achieved.
 8. View the highest score persisted from previous game sessions on the high scores screen.
@@ -65,7 +65,7 @@ The player will be able to:
 25. See the barriers at room exits disappear when all enemies are defeated.
 26. Progress to the next procedurally generated room through the open passages.
 27. Experience increasing difficulty as room number increases.
-28. Encounter the final boss in Room 10 (stronger enemy with more health and damage).
+28. Encounter the final boss in Room 5 (stronger enemy with more health and damage).
 29. Defeat the final boss to achieve victory.
 30. Pause the game at any time by pressing ESC.
 31. View the pause menu with options to resume, view instructions, or quit to main menu.
@@ -103,7 +103,7 @@ The player will be able to:
 
 ### 🗺️ Class Diagram
 
-![Class Diagram](./assets/images/ClassDiagram.png)
+![Class Diagram](./assets/images/ClassDiagramV3.png)
 
 ### 🧵 Wireframes
 
