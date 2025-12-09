@@ -1,45 +1,45 @@
 /**
- * Game Name
+ * Blades of the Dune
  *
- * Authors
+ * A top-down action roguelike dungeon crawler
  *
- * Brief description
- *
- * Asset sources
+ * Asset Credits:
+ * - Ninja Adventure Asset Pack by pixel-boy (itch.io)
+ *   https://pixel-boy.itch.io/ninja-adventure-asset-pack
  */
 
-import GameStateName from './enums/GameStateName.js';
-import Game from '../lib/Game.js';
+import GameStateName from "./enums/GameStateName.js";
+import Game from "../lib/Game.js";
 import {
-	canvas,
-	CANVAS_HEIGHT,
-	CANVAS_WIDTH,
-	context,
-	fonts,
-	images,
-	timer,
-	sounds,
-	stateMachine,
-} from './globals.js';
-import PlayState from './states/PlayState.js';
-import GameOverState from './states/GameOverState.js';
-import VictoryState from './states/VictoryState.js';
-import TitleScreenState from './states/TitleScreenState.js';
+  canvas,
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  context,
+  fonts,
+  images,
+  timer,
+  sounds,
+  stateMachine,
+} from "./globals.js";
+import PlayState from "./states/PlayState.js";
+import GameOverState from "./states/GameOverState.js";
+import VictoryState from "./states/VictoryState.js";
+import TitleScreenState from "./states/TitleScreenState.js";
 
 // Set the dimensions of the play area.
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
-canvas.setAttribute('tabindex', '1'); // Allows the canvas to receive user input.
+canvas.setAttribute("tabindex", "1");
 
 // Now that the canvas element has been prepared, we can add it to the DOM.
 document.body.appendChild(canvas);
 
 // Fetch the asset definitions from config.json.
 const {
-	images: imageDefinitions,
-	fonts: fontDefinitions,
-	sounds: soundDefinitions,
-} = await fetch('./src/config.json').then((response) => response.json());
+  images: imageDefinitions,
+  fonts: fontDefinitions,
+  sounds: soundDefinitions,
+} = await fetch("./src/config.json").then((response) => response.json());
 
 // Load all the assets from their definitions.
 images.load(imageDefinitions);
@@ -52,14 +52,15 @@ stateMachine.add(GameStateName.GameOver, new GameOverState());
 stateMachine.add(GameStateName.Victory, new VictoryState());
 stateMachine.add(GameStateName.Play, new PlayState());
 
+// Start at title screen (change to Play for development)
 stateMachine.change(GameStateName.Play);
 
 const game = new Game(
-	stateMachine,
-	context,
-	timer,
-	canvas.width,
-	canvas.height
+  stateMachine,
+  context,
+  timer,
+  canvas.width,
+  canvas.height
 );
 
 game.start();

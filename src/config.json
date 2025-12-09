@@ -1,11 +1,94 @@
 {
-	"images": [
-
-	],
-	"fonts": [
-
-	],
-	"sounds": [
-		
-	]
+  "images": [
+    {
+      "name": "player-idle",
+      "path": "./assets/images/Player/Idle.png"
+    },
+    {
+      "name": "player-walk",
+      "path": "./assets/images/Player/Walk.png"
+    },
+    {
+      "name": "player-attack",
+      "path": "./assets/images/Player/Attack.png"
+    },
+    {
+      "name": "player-dead",
+      "path": "./assets/images/Player/Dead.png"
+    },
+    {
+      "name": "samurai-idle",
+      "path": "./assets/images/EnemySamurai/Idle.png"
+    },
+    {
+      "name": "samurai-walk",
+      "path": "./assets/images/EnemySamurai/Walk.png"
+    },
+    {
+      "name": "samurai-attack",
+      "path": "./assets/images/EnemySamurai/Attack.png"
+    },
+    {
+      "name": "samurai-dead",
+      "path": "./assets/images/EnemySamurai/Dead.png"
+    },
+    {
+      "name": "tengu-idle",
+      "path": "./assets/images/EnemyTengu/Idle.png"
+    },
+    {
+      "name": "tengu-walk",
+      "path": "./assets/images/EnemyTengu/Walk.png"
+    },
+    {
+      "name": "tengu-attack",
+      "path": "./assets/images/EnemyTengu/Attack.png"
+    },
+    {
+      "name": "tengu-dead",
+      "path": "./assets/images/EnemyTengu/Dead.png"
+    },
+    {
+      "name": "boss-idle",
+      "path": "./assets/images/BossSamurai/Idle.png"
+    },
+    {
+      "name": "boss-walk",
+      "path": "./assets/images/BossSamurai/Walk.png"
+    },
+    {
+      "name": "boss-hit",
+      "path": "./assets/images/BossSamurai/Hit.png"
+    },
+    {
+      "name": "boss-charge-left",
+      "path": "./assets/images/BossSamurai/ChargeLeft.png"
+    },
+    {
+      "name": "boss-charge-right",
+      "path": "./assets/images/BossSamurai/ChargeRight.png"
+    },
+    {
+      "name": "boss-attack-left",
+      "path": "./assets/images/BossSamurai/AttackLeft.png"
+    },
+    {
+      "name": "boss-attack-right",
+      "path": "./assets/images/BossSamurai/AttackRight.png"
+    },
+    {
+      "name": "health-potion",
+      "path": "./assets/images/Items/HealthPotion.png"
+    },
+    {
+      "name": "damage-boost",
+      "path": "./assets/images/Items/DamageBoost.png"
+    },
+    {
+      "name": "desert-tileset",
+      "path": "./assets/images/Tiles/TilesetDesert.png"
+    }
+  ],
+  "fonts": [],
+  "sounds": []
 }
