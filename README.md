@@ -87,33 +87,33 @@ The player will be able to:
 
 ### Game States (Global State Machine)
 
-![State Diagram](./assets/images/GameDiagram.png)
+![State Diagram](./assets/images/Diagrams/GameDiagram.png)
 
 ### Player States
 
-![State Diagram](./assets/images/PlayerDiagram.png)
+![State Diagram](./assets/images/Diagrams/PlayerDiagram.png)
 
 ### Enemy States
 
-![State Diagram](./assets/images/EnemyDiagram.png)
+![State Diagram](./assets/images/Diagrams/EnemyDiagram.png)
 
 ### Boss States
 
-![State Diagram](./assets/images/BossDiagram.png)
+![State Diagram](./assets/images/Diagrams/BossDiagram.png)
 
 ### 🗺️ Class Diagram
 
-![Class Diagram](./assets/images/ClassDiagramV3.png)
+![Class Diagram](./assets/images/Diagrams/ClassDiagramV3.png)
 
 ### 🧵 Wireframes
 
-![Wireframe](./assets/images/MenuWireframe.png)
-![Wireframe](./assets/images/InstructionWireframe.png)
-![Wireframe](./assets/images/HighScoreWireframe.png)
-![Wireframe](./assets/images/GameWireframe.png)
-![Wireframe](./assets/images/PausedWireframe.png)
-![Wireframe](./assets/images/VictoryWireframe.png)
-![Wireframe](./assets/images/GameOverWireframe.png)
+![Wireframe](./assets/images/Wireframes/MenuWireframe.png)
+![Wireframe](./assets/images/Wireframes/InstructionWireframe.png)
+![Wireframe](./assets/images/Wireframes/HighScoreWireframe.png)
+![Wireframe](./assets/images/Wireframes/GameWireframe.png)
+![Wireframe](./assets/images/Wireframes/PausedWireframe.png)
+![Wireframe](./assets/images/Wireframes/VictoryWireframe.png)
+![Wireframe](./assets/images/Wireframes/GameOverWireframe.png)
 
 ## 🎨 Assets
 
