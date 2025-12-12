@@ -22,8 +22,9 @@ export default class Room {
      *
      * @param {object} roomDefinition JSON from Tiled room editor.
      * @param {number} roomNumber The current room number
+     * @param {number} previousScore Score carried from previous room
      */
-    constructor(roomDefinition, roomNumber = 1) {
+    constructor(roomDefinition, roomNumber = 1, previousScore = 0) {
         // Generate sprites from both tilesets
         const tilesSprites = Sprite.generateSpritesFromSpriteSheet(
             images.get(ImageName.Tiles),
@@ -53,11 +54,16 @@ export default class Room {
         this.roomNumber = roomNumber;
         this.player = new Player({ position: new Vector(6, 5) }, this);
 
+        // Score tracking
+        this.score = previousScore;
+
         // Enemy management
         this.enemies = [];
+        this.totalEnemiesSpawned = 0;
         this.spawnEnemies();
         this.isCleared = false;
 
+        // Debug toggles
         this.renderBottomLayer = true;
         this.renderCollisionLayer = true;
         this.renderTopLayer = true;
@@ -66,6 +72,7 @@ export default class Room {
     spawnEnemies() {
         // Use factory to spawn enemies based on room number
         this.enemies = EnemyFactory.spawnEnemies(this.roomNumber, this);
+        this.totalEnemiesSpawned = this.enemies.length;
     }
 
     update(dt) {
@@ -73,9 +80,20 @@ export default class Room {
 
         // Update all enemies
         this.enemies.forEach((enemy) => {
-            if (!enemy.isDead) {
-                enemy.update(dt);
+            enemy.update(dt);
+        });
+
+        // Clean up dead enemies after their death animation
+        this.enemies = this.enemies.filter((enemy) => {
+            if (enemy.cleanupReady) {
+                // Award score when enemy is cleaned up
+                this.score += enemy.scoreValue;
+                console.log(
+                    `+${enemy.scoreValue} points! Total score: ${this.score}`
+                );
+                return false;
             }
+            return true;
         });
 
         // Check if room is cleared
@@ -100,7 +118,7 @@ export default class Room {
             this.collisionLayer.render();
         }
 
-        // Render all enemies
+        // Render all enemies (including dead ones playing death animation)
         this.enemies.forEach((enemy) => {
             enemy.render();
         });
@@ -111,23 +129,35 @@ export default class Room {
             this.topLayer.render();
         }
 
-        Room.renderInstructions();
-
         if (DEBUG) {
             Room.renderGrid();
+            Room.renderInstructions();
         }
     }
 
+    /**
+     * Check if room is cleared - called every frame
+     */
     checkClear() {
         if (this.isCleared) return;
 
-        // Check if all enemies are dead
-        const allDead = this.enemies.every((enemy) => enemy.isDead);
+        // Check if all enemies are cleaned up (not just dead)
+        const allCleanedUp = this.enemies.every(
+            (enemy) => enemy.cleanupReady || enemy.isDead
+        );
+        const noEnemiesLeft = this.enemies.length === 0;
 
-        if (allDead && this.enemies.length > 0) {
+        if ((allCleanedUp || noEnemiesLeft) && this.totalEnemiesSpawned > 0) {
             this.isCleared = true;
+            this.transitionDelayStarted = false;
+            this.transitionTimer = 0;
+
             console.log(`Room ${this.roomNumber} cleared!`);
-            // TODO: Open doors, spawn items
+
+            // Award bonus points for clearing room
+            const bonusPoints = 50 + this.roomNumber * 10;
+            this.addScore(bonusPoints);
+            console.log(`+${bonusPoints} ROOM CLEAR BONUS!`);
         }
     }
 
@@ -136,6 +166,23 @@ export default class Room {
         if (index > -1) {
             this.enemies.splice(index, 1);
         }
+    }
+
+    /**
+     * Get the current score
+     * @returns {number}
+     */
+    getScore() {
+        return this.score;
+    }
+
+    /**
+     * Add points to the score
+     * @param {number} points
+     */
+    addScore(points) {
+        this.score += points;
+        console.log(`+${points} points! Total score: ${this.score}`);
     }
 
     /**

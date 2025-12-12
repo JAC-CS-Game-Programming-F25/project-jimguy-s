@@ -7,6 +7,7 @@ import EnemyIdlingState from "../states/enemy/EnemyIdlingState.js";
 import EnemyWalkingState from "../states/enemy/EnemyWalkingState.js";
 import EnemyChasingState from "../states/enemy/EnemyChasingState.js";
 import EnemyAttackingState from "../states/enemy/EnemyAttackingState.js";
+import EnemyDeadState from "../states/enemy/EnemyDeadState.js";
 import Tile from "../services/Tile.js";
 import { context } from "../globals.js";
 
@@ -29,11 +30,12 @@ export default class Enemy extends GameEntity {
         this.damage = entityDefinition.damage || 5;
         this.speed = entityDefinition.speed || 32; // pixels per second
         this.detectionRange = entityDefinition.detectionRange || 5; // tiles
-        this.attackRange = entityDefinition.attackRange || 1.5; // tiles
+        this.attackRange = entityDefinition.attackRange || 1.3; // tiles
         this.scoreValue = entityDefinition.scoreValue || 10;
 
         // State tracking
         this.isDead = false;
+        this.cleanupReady = false; // Set to true when death animation is complete
         this.isInvulnerable = false;
         this.invulnerabilityTimer = 0;
         this.invulnerabilityDuration = 0.5; // seconds
@@ -52,6 +54,7 @@ export default class Enemy extends GameEntity {
             EnemyStateName.Attacking,
             new EnemyAttackingState(this)
         );
+        stateMachine.add(EnemyStateName.Dead, new EnemyDeadState(this));
 
         // Start in idle state
         stateMachine.change(EnemyStateName.Idling);
@@ -60,8 +63,6 @@ export default class Enemy extends GameEntity {
     }
 
     update(dt) {
-        if (this.isDead) return;
-
         super.update(dt);
 
         // Update invulnerability timer
@@ -73,24 +74,34 @@ export default class Enemy extends GameEntity {
             }
         }
 
-        if (this.currentAnimation) {
+        // Don't update animation if dead - let death state handle it
+        if (!this.isDead && this.currentAnimation) {
             this.currentAnimation.update(dt);
             this.currentFrame = this.currentAnimation.getCurrentFrame();
         }
     }
 
     render() {
-        if (this.isDead) return;
-
         const x = Math.floor(this.canvasPosition.x);
         const y = Math.floor(this.canvasPosition.y - this.dimensions.y / 2);
+
+        // If dead, use death state rendering
+        if (this.isDead) {
+            if (
+                this.stateMachine &&
+                this.stateMachine.currentState &&
+                this.stateMachine.currentState.render
+            ) {
+                this.stateMachine.currentState.render();
+            }
+            return;
+        }
 
         // Flash red if invulnerable (hit feedback)
         if (
             this.isInvulnerable &&
             Math.floor(this.invulnerabilityTimer * 10) % 2 === 0
         ) {
-            // Skip rendering every other frame for flashing effect
             return;
         }
 
@@ -146,7 +157,12 @@ export default class Enemy extends GameEntity {
     die() {
         this.isDead = true;
         console.log(`Enemy died! Score value: ${this.scoreValue}`);
-        // TODO: Drop items, award score, play death animation
+
+        // Transition to dead state
+        this.changeState(EnemyStateName.Dead);
+
+        // TODO: Award score to player
+        // TODO: Drop items
     }
 
     getDistanceToPlayer() {

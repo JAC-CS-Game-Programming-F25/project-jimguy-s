@@ -4,6 +4,7 @@ import StateMachine from "../../lib/StateMachine.js";
 import PlayerWalkingState from "../states/player/PlayerWalkingState.js";
 import PlayerIdlingState from "../states/player/PlayerIdlingState.js";
 import PlayerAttackingState from "../states/player/PlayerAttackingState.js";
+import PlayerDeadState from "../states/player/PlayerDeadState.js";
 import PlayerStateName from "../enums/PlayerStateName.js";
 import Sprite from "../../lib/Sprite.js";
 import Vector from "../../lib/Vector.js";
@@ -11,7 +12,7 @@ import ImageName from "../enums/ImageName.js";
 import Room from "../services/Room.js";
 
 export default class Player extends GameEntity {
-    static SPEED = 64; // pixels per second (4 tiles per second)
+    static SPEED = 64;
 
     constructor(entityDefinition = {}, room) {
         super(entityDefinition);
@@ -19,36 +20,30 @@ export default class Player extends GameEntity {
         this.room = room;
         this.dimensions = new Vector(GameEntity.WIDTH, GameEntity.HEIGHT);
 
-        // Player stats
         this.maxHealth = 100;
         this.health = this.maxHealth;
-        this.damageBoost = 0; // Increased by collecting damage boost items
+        this.damageBoost = 0;
 
-        // Damage state
         this.isInvulnerable = false;
         this.invulnerabilityTimer = 0;
-        this.invulnerabilityDuration = 1.0; // Longer invulnerability for player
+        this.invulnerabilityDuration = 1.0;
 
-        // Attack state - MUST be false by default
         this.isAttacking = false;
-
-        // Attack cooldown to prevent spam
         this.attackCooldown = 0;
-        this.attackCooldownDuration = 0.4; // 0.4 seconds between attacks
+        this.attackCooldownDuration = 0.4;
 
-        // Initialize both sprite sets
+        this.isDead = false;
+
         this.idleSprites = this.initializeIdleSprites();
         this.walkSprites = this.initializeWalkSprites();
         this.attackSprites = this.initializeAttackingSprites();
-        this.sprites = this.idleSprites; // Start with idle
+        this.deadSprites = this.initializeDeadSprites();
+        this.sprites = this.idleSprites;
 
-        // Initialize currentFrame to a valid value BEFORE state machine
         this.currentFrame = 0;
 
-        // Initialize state machine (which will set currentAnimation)
         this.stateMachine = this.initializeStateMachine();
 
-        // Now update currentAnimation from the initial state
         this.currentAnimation =
             this.stateMachine.currentState.animation[this.direction];
     }
@@ -56,7 +51,6 @@ export default class Player extends GameEntity {
     update(dt) {
         super.update(dt);
 
-        // Update attack cooldown
         if (this.attackCooldown > 0) {
             this.attackCooldown -= dt;
             if (this.attackCooldown < 0) {
@@ -64,7 +58,6 @@ export default class Player extends GameEntity {
             }
         }
 
-        // Update invulnerability timer
         if (this.isInvulnerable) {
             this.invulnerabilityTimer += dt;
             if (this.invulnerabilityTimer >= this.invulnerabilityDuration) {
@@ -80,36 +73,27 @@ export default class Player extends GameEntity {
     }
 
     canAttack() {
-        return !this.isAttacking && this.attackCooldown <= 0;
+        return !this.isAttacking && this.attackCooldown <= 0 && !this.isDead;
     }
 
     render() {
         const x = Math.floor(this.canvasPosition.x);
         const y = Math.floor(this.canvasPosition.y - this.dimensions.y / 2);
 
-        // Flash when invulnerable
         if (
             this.isInvulnerable &&
             Math.floor(this.invulnerabilityTimer * 8) % 2 === 0
         ) {
-            // Skip rendering every other frame for flashing effect
             return;
         }
 
-        // Safety check before rendering
         if (this.sprites && this.sprites[this.currentFrame]) {
             super.render(x, y);
-        } else {
-            console.warn(
-                `Player sprite at frame ${
-                    this.currentFrame
-                } is undefined. Total sprites: ${this.sprites?.length || 0}`
-            );
         }
     }
 
     takeDamage(amount) {
-        if (this.isInvulnerable || this.health <= 0) {
+        if (this.isInvulnerable || this.isDead) {
             return false;
         }
 
@@ -130,6 +114,8 @@ export default class Player extends GameEntity {
     }
 
     heal(amount) {
+        if (this.isDead) return;
+
         this.health = Math.min(this.health + amount, this.maxHealth);
         console.log(
             `Player healed ${amount} HP. Health: ${this.health}/${this.maxHealth}`
@@ -137,6 +123,8 @@ export default class Player extends GameEntity {
     }
 
     increaseDamage(amount) {
+        if (this.isDead) return;
+
         this.damageBoost += amount;
         console.log(
             `Player damage increased by ${amount}. Total boost: ${this.damageBoost}`
@@ -144,8 +132,9 @@ export default class Player extends GameEntity {
     }
 
     die() {
-        console.log("Player died! Game Over");
-        // TODO: Transition to game over state
+        this.isDead = true;
+        console.log("Player died!");
+        this.changeState(PlayerStateName.Dead);
     }
 
     initializeStateMachine() {
@@ -157,11 +146,10 @@ export default class Player extends GameEntity {
             PlayerStateName.Attacking,
             new PlayerAttackingState(this)
         );
+        stateMachine.add(PlayerStateName.Dead, new PlayerDeadState(this));
 
-        // Start in idling state
         stateMachine.change(PlayerStateName.Idling);
 
-        // Ensure isAttacking is false when not attacking
         this.isAttacking = false;
 
         return stateMachine;
@@ -171,62 +159,59 @@ export default class Player extends GameEntity {
         const playerImage = images.get(ImageName.PlayerIdle);
 
         if (!playerImage) {
-            console.error(
-                `Player idle image not found! ImageName: ${ImageName.PlayerIdle}`
-            );
+            console.error(`Player idle image not found!`);
             return [];
         }
 
-        const sprites = Sprite.generateSpritesFromSpriteSheet(
+        return Sprite.generateSpritesFromSpriteSheet(
             playerImage,
             GameEntity.WIDTH,
             GameEntity.HEIGHT
         );
-
-        console.log(`Generated ${sprites.length} idle sprites`);
-
-        return sprites;
     }
 
     initializeWalkSprites() {
         const playerImage = images.get(ImageName.PlayerWalk);
 
         if (!playerImage) {
-            console.error(
-                `Player walk image not found! ImageName: ${ImageName.PlayerWalk}`
-            );
+            console.error(`Player walk image not found!`);
             return [];
         }
 
-        const sprites = Sprite.generateSpritesFromSpriteSheet(
+        return Sprite.generateSpritesFromSpriteSheet(
             playerImage,
             GameEntity.WIDTH,
             GameEntity.HEIGHT
         );
-
-        console.log(`Generated ${sprites.length} walk sprites`);
-
-        return sprites;
     }
 
     initializeAttackingSprites() {
         const playerImage = images.get(ImageName.PlayerAttack);
 
         if (!playerImage) {
-            console.error(
-                `Player attack image not found! ImageName: ${ImageName.PlayerAttack}`
-            );
+            console.error(`Player attack image not found!`);
             return [];
         }
 
-        const sprites = Sprite.generateSpritesFromSpriteSheet(
+        return Sprite.generateSpritesFromSpriteSheet(
             playerImage,
             GameEntity.WIDTH,
             GameEntity.HEIGHT
         );
+    }
 
-        console.log(`Generated ${sprites.length} attack sprites`);
+    initializeDeadSprites() {
+        const playerImage = images.get(ImageName.PlayerDead);
 
-        return sprites;
+        if (!playerImage) {
+            console.error(`Player dead image not found!`);
+            return [];
+        }
+
+        return Sprite.generateSpritesFromSpriteSheet(
+            playerImage,
+            GameEntity.WIDTH,
+            GameEntity.HEIGHT
+        );
     }
 }

@@ -33,7 +33,7 @@
         {
             "name": "player-dead",
             "path": "../assets/images/Player/Dead.png",
-            "width": 64,
+            "width": 16,
             "height": 16
         },
 
