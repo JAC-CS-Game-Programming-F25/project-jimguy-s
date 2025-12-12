@@ -17,6 +17,74 @@
             "path": "../assets/images/Player/Idle.png",
             "width": 64,
             "height": 16
+        },
+        {
+            "name": "player-walk",
+            "path": "../assets/images/Player/Walk.png",
+            "width": 64,
+            "height": 64
+        },
+        {
+            "name": "player-attack",
+            "path": "../assets/images/Player/Attack.png",
+            "width": 64,
+            "height": 16
+        },
+        {
+            "name": "player-dead",
+            "path": "../assets/images/Player/Dead.png",
+            "width": 64,
+            "height": 16
+        },
+
+        {
+            "name": "samurai-idle",
+            "path": "../assets/images/SamuraiEnemy/Idle.png",
+            "width": 64,
+            "height": 16
+        },
+        {
+            "name": "samurai-walk",
+            "path": "../assets/images/SamuraiEnemy/Walk.png",
+            "width": 64,
+            "height": 64
+        },
+        {
+            "name": "samurai-attack",
+            "path": "../assets/images/SamuraiEnemy/Attack.png",
+            "width": 64,
+            "height": 16
+        },
+        {
+            "name": "samurai-dead",
+            "path": "../assets/images/SamuraiEnemy/Dead.png",
+            "width": 16,
+            "height": 16
+        },
+
+        {
+            "name": "tengu-idle",
+            "path": "../assets/images/TenguEnemy/Idle.png",
+            "width": 64,
+            "height": 16
+        },
+        {
+            "name": "tengu-walk",
+            "path": "../assets/images/TenguEnemy/Walk.png",
+            "width": 64,
+            "height": 64
+        },
+        {
+            "name": "tengu-attack",
+            "path": "../assets/images/TenguEnemy/Attack.png",
+            "width": 64,
+            "height": 16
+        },
+        {
+            "name": "tengu-dead",
+            "path": "../assets/images/TenguEnemy/Dead.png",
+            "width": 16,
+            "height": 16
         }
     ],
     "fonts": [],

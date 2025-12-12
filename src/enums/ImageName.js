@@ -7,10 +7,19 @@ const ImageName = {
     PlayerIdle: "player-idle",
     PlayerWalk: "player-walk",
     PlayerAttack: "player-attack",
+    PlayerDead: "player-dead",
 
-    // Enemy sprites
-    EnemySamurai: "enemy-samurai",
-    EnemyTengu: "enemy-tengu",
+    // Samurai sprites
+    SamuraiIdle: "samurai-idle",
+    SamuraiWalk: "samurai-walk",
+    SamuraiAttack: "samurai-attack",
+    SamuraiDead: "samurai-dead",
+
+    // Tengu sprites
+    TenguIdle: "tengu-idle",
+    TenguWalk: "tengu-walk",
+    TenguAttack: "tengu-attack",
+    TenguDead: "tengu-dead",
 
     // Boss sprites
     Boss: "boss",

@@ -26,21 +26,24 @@ export default class PlayerIdlingState extends State {
     }
 
     enter() {
+        // Switch to idle sprites
+        this.player.sprites = this.player.idleSprites;
         this.player.currentAnimation = this.animation[this.player.direction];
     }
 
     update() {
-        if (input.isKeyHeld(Input.KEYS.S)) {
-            this.player.direction = Direction.Down;
-            this.player.changeState(PlayerStateName.Walking);
-        } else if (input.isKeyHeld(Input.KEYS.D)) {
-            this.player.direction = Direction.Right;
-            this.player.changeState(PlayerStateName.Walking);
-        } else if (input.isKeyHeld(Input.KEYS.W)) {
-            this.player.direction = Direction.Up;
-            this.player.changeState(PlayerStateName.Walking);
-        } else if (input.isKeyHeld(Input.KEYS.A)) {
-            this.player.direction = Direction.Left;
+        if (input.isKeyPressed(Input.KEYS.SPACE)) {
+            this.player.changeState(PlayerStateName.Attacking);
+            return;
+        }
+
+        // Check for any movement input
+        if (
+            input.isKeyHeld(Input.KEYS.W) ||
+            input.isKeyHeld(Input.KEYS.A) ||
+            input.isKeyHeld(Input.KEYS.S) ||
+            input.isKeyHeld(Input.KEYS.D)
+        ) {
             this.player.changeState(PlayerStateName.Walking);
         }
     }
