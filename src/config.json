@@ -1,11 +1,24 @@
 {
-	"images": [
-
-	],
-	"fonts": [
-
-	],
-	"sounds": [
-		
-	]
+    "images": [
+        {
+            "name": "tiles",
+            "path": "../assets/tiles/TilesetFloor.png",
+            "width": 352,
+            "height": 416
+        },
+        {
+            "name": "buildings",
+            "path": "../assets/tiles/TilesetDesert.png",
+            "width": 320,
+            "height": 192
+        },
+        {
+            "name": "player-idle",
+            "path": "../assets/images/Player/Idle.png",
+            "width": 64,
+            "height": 16
+        }
+    ],
+    "fonts": [],
+    "sounds": []
 }
