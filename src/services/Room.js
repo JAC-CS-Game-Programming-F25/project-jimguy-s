@@ -4,6 +4,7 @@ import Player from "../entities/Player.js";
 import ImageName from "../enums/ImageName.js";
 import Tile from "./Tile.js";
 import Layer from "./Layer.js";
+import EnemyFactory from "./EnemyFactory.js";
 import {
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
@@ -20,8 +21,9 @@ export default class Room {
      * and characters that comprises the world.
      *
      * @param {object} roomDefinition JSON from Tiled room editor.
+     * @param {number} roomNumber The current room number
      */
-    constructor(roomDefinition) {
+    constructor(roomDefinition, roomNumber = 1) {
         // Generate sprites from both tilesets
         const tilesSprites = Sprite.generateSpritesFromSpriteSheet(
             images.get(ImageName.Tiles),
@@ -36,7 +38,6 @@ export default class Room {
         );
 
         // Combine sprites arrays
-        // Buildings start at firstgid: 573, so we need to offset
         const sprites = [...tilesSprites, ...buildingsSprites];
 
         this.bottomLayer = new Layer(
@@ -48,16 +49,39 @@ export default class Room {
             sprites
         );
         this.topLayer = new Layer(roomDefinition.layers[Layer.TOP], sprites);
+
+        this.roomNumber = roomNumber;
         this.player = new Player({ position: new Vector(6, 5) }, this);
+
+        // Enemy management
+        this.enemies = [];
+        this.spawnEnemies();
+        this.isCleared = false;
 
         this.renderBottomLayer = true;
         this.renderCollisionLayer = true;
         this.renderTopLayer = true;
     }
 
+    spawnEnemies() {
+        // Use factory to spawn enemies based on room number
+        this.enemies = EnemyFactory.spawnEnemies(this.roomNumber, this);
+    }
+
     update(dt) {
         this.player.update(dt);
 
+        // Update all enemies
+        this.enemies.forEach((enemy) => {
+            if (!enemy.isDead) {
+                enemy.update(dt);
+            }
+        });
+
+        // Check if room is cleared
+        this.checkClear();
+
+        // Debug layer toggles
         if (input.isKeyPressed(Input.KEYS.NUMROW_1)) {
             this.renderBottomLayer = !this.renderBottomLayer;
         } else if (input.isKeyPressed(Input.KEYS.NUMROW_2)) {
@@ -76,6 +100,11 @@ export default class Room {
             this.collisionLayer.render();
         }
 
+        // Render all enemies
+        this.enemies.forEach((enemy) => {
+            enemy.render();
+        });
+
         this.player.render();
 
         if (this.renderTopLayer) {
@@ -86,6 +115,26 @@ export default class Room {
 
         if (DEBUG) {
             Room.renderGrid();
+        }
+    }
+
+    checkClear() {
+        if (this.isCleared) return;
+
+        // Check if all enemies are dead
+        const allDead = this.enemies.every((enemy) => enemy.isDead);
+
+        if (allDead && this.enemies.length > 0) {
+            this.isCleared = true;
+            console.log(`Room ${this.roomNumber} cleared!`);
+            // TODO: Open doors, spawn items
+        }
+    }
+
+    removeEnemy(enemy) {
+        const index = this.enemies.indexOf(enemy);
+        if (index > -1) {
+            this.enemies.splice(index, 1);
         }
     }
 
