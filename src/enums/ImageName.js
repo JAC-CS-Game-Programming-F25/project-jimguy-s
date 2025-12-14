@@ -22,7 +22,11 @@ const ImageName = {
     TenguDead: "tengu-dead",
 
     // Boss sprites
-    Boss: "boss",
+    BossIdle: "boss-idle",
+    BossWalk: "boss-walk",
+    BossAttackLeft: "boss-attackleft",
+    BossAttackRight: "boss-attackright",
+    BossHit: "boss-hit",
 
     // Item sprites
     Items: "items",

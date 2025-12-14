@@ -85,8 +85,44 @@
             "path": "../assets/images/TenguEnemy/Dead.png",
             "width": 16,
             "height": 16
+        },
+
+        {
+            "name": "boss-idle",
+            "path": "../assets/images/Boss/Idle.png",
+            "width": 576,
+            "height": 48
+        },
+        {
+            "name": "boss-walk",
+            "path": "../assets/images/Boss/Walk.png",
+            "width": 576,
+            "height": 48
+        },
+        {
+            "name": "boss-attackleft",
+            "path": "../assets/images/Boss/AttackLeft.png",
+            "width": 384,
+            "height": 96
+        },
+        {
+            "name": "boss-attackright",
+            "path": "../assets/images/Boss/AttackRight.png",
+            "width": 384,
+            "height": 96
+        },
+        {
+            "name": "boss-hit",
+            "path": "../assets/images/Boss/Hit.png",
+            "width": 384,
+            "height": 48
         }
     ],
-    "fonts": [],
+    "fonts": [
+        {
+            "name": "gameFont",
+            "path": "../assets/fonts/NormalFont.ttf"
+        }
+    ],
     "sounds": []
 }
