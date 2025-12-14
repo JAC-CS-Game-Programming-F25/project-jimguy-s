@@ -29,7 +29,8 @@ const ImageName = {
     BossHit: "boss-hit",
 
     // Item sprites
-    Items: "items",
+    DamageBoost: "dmg-boost",
+    HealthBoost: "health-boost",
 
     // UI elements
     Hearts: "hearts",

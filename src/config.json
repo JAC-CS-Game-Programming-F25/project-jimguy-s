@@ -123,6 +123,19 @@
             "path": "../assets/images/UI/Heart.png",
             "width": 80,
             "height": 16
+        },
+
+        {
+            "name": "dmg-boost",
+            "path": "../assets/images/Items/Sword.png",
+            "width": 6,
+            "height": 15
+        },
+        {
+            "name": "health-boost",
+            "path": "../assets/images/Items/Heart.png",
+            "width": 9,
+            "height": 8
         }
     ],
     "fonts": [
