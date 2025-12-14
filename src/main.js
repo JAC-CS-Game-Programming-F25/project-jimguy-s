@@ -2,6 +2,7 @@ import Game from "../lib/Game.js";
 import TitleScreenState from "./states/TitleScreenState.js";
 import PlayState from "./states/PlayState.js";
 import GameStateName from "./enums/GameStateName.js";
+import InstructionsState from "./states/InstructionsState.js";
 import {
     canvas,
     CANVAS_HEIGHT,
@@ -31,6 +32,7 @@ fonts.load(fontDefinitions);
 
 // Add states
 stateMachine.add(GameStateName.TitleScreen, new TitleScreenState());
+stateMachine.add(GameStateName.Instructions, new InstructionsState());
 stateMachine.add(GameStateName.Play, new PlayState());
 
 const game = new Game(
