@@ -36,9 +36,7 @@ export default class HighScoresState extends State {
 
     update(dt) {
         if (
-            input.isKeyPressed(Input.KEYS.ENTER) ||
-            input.isKeyPressed(Input.KEYS.SPACE) ||
-            input.isKeyPressed(Input.KEYS.ESCAPE)
+            input.isKeyPressed(Input.KEYS.ENTER)
         ) {
             this.backButton.onClick();
         }

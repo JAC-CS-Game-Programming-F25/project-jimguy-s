@@ -42,7 +42,7 @@ export default class GameOverState extends State {
                 () => stateMachine.change(GameStateName.Play)
             ),
             new Button(
-                centerX,	
+                centerX,
                 centerY + spacing,
                 buttonWidth,
                 buttonHeight,
@@ -78,11 +78,8 @@ export default class GameOverState extends State {
             this.buttons[this.selectedButtonIndex].isHovered = true;
         }
 
-        // Activate selected button with Enter or Space
-        if (
-            input.isKeyPressed(Input.KEYS.ENTER) ||
-            input.isKeyPressed(Input.KEYS.SPACE)
-        ) {
+        // Activate selected button with Enter
+        if (input.isKeyPressed(Input.KEYS.ENTER)) {
             this.buttons[this.selectedButtonIndex].onClick();
         }
 
