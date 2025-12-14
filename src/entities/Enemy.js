@@ -220,7 +220,7 @@ export default class Enemy extends GameEntity {
     }
 
     /**
-     * Check if moving to a position is valid (no walls, no enemies)
+     * Check if moving to a position is valid (no walls, no enemies, within bounds)
      * @param {number} x - New X position in tiles
      * @param {number} y - New Y position in tiles
      * @returns {boolean} - True if position is valid
@@ -229,6 +229,17 @@ export default class Enemy extends GameEntity {
         const collisionLayer = this.room.collisionLayer;
         const width = this.dimensions.x / Tile.SIZE;
         const height = this.dimensions.y / Tile.SIZE;
+
+        // Check canvas boundaries (room dimensions)
+        if (x < 0 || y < 0) {
+            return false;
+        }
+        if (
+            x + width > this.room.bottomLayer.width ||
+            y + height > this.room.bottomLayer.height
+        ) {
+            return false;
+        }
 
         // Check collision tiles
         const topLeftTile = collisionLayer.getTile(

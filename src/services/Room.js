@@ -89,11 +89,9 @@ export default class Room {
 
     /**
      * Define exit zones for this room
-     * Each exit has a position, size, and leads to a specific room/entrance
+     * Only allows forward progression (no going back)
      */
     defineExits() {
-        // Exit positions vary by room layout
-        // Looking at the room JSONs, we need to define where doors/exits are
         const exitDefinitions = {
             1: [
                 {
@@ -108,14 +106,6 @@ export default class Room {
             2: [
                 {
                     x: 6,
-                    y: 0,
-                    width: 3,
-                    height: 1,
-                    direction: "top",
-                    leadsTo: 1,
-                },
-                {
-                    x: 6,
                     y: 11,
                     width: 3,
                     height: 1,
@@ -124,14 +114,6 @@ export default class Room {
                 },
             ],
             3: [
-                {
-                    x: 6,
-                    y: 0,
-                    width: 3,
-                    height: 1,
-                    direction: "top",
-                    leadsTo: 2,
-                },
                 {
                     x: 6,
                     y: 11,
@@ -144,14 +126,6 @@ export default class Room {
             4: [
                 {
                     x: 6,
-                    y: 0,
-                    width: 3,
-                    height: 1,
-                    direction: "top",
-                    leadsTo: 3,
-                },
-                {
-                    x: 6,
                     y: 11,
                     width: 3,
                     height: 1,
@@ -160,14 +134,7 @@ export default class Room {
                 },
             ],
             5: [
-                {
-                    x: 6,
-                    y: 0,
-                    width: 3,
-                    height: 1,
-                    direction: "top",
-                    leadsTo: 4,
-                },
+                // No exit - final room triggers victory when cleared
             ],
         };
 
@@ -189,18 +156,13 @@ export default class Room {
      * Get spawn position based on which direction player entered from
      */
     getSpawnPosition(entranceDirection) {
-        switch (entranceDirection) {
-            case "top":
-                return new Vector(7, 1); // Spawn near top
-            case "bottom":
-                return new Vector(7, 10); // Spawn near bottom
-            case "left":
-                return new Vector(1, 6); // Spawn near left
-            case "right":
-                return new Vector(13, 6); // Spawn near right
-            default:
-                return new Vector(6, 5); // Default center spawn for first room
+        // Room 1 starts in center
+        if (entranceDirection === null) {
+            return new Vector(7, 9); // Start near bottom-center
         }
+
+        // All other rooms enter from top (coming from previous room)
+        return new Vector(7, 1.5); // Spawn near top exit
     }
 
     spawnEnemies() {
@@ -238,15 +200,6 @@ export default class Room {
         if (exitInfo) {
             this.triggerRoomTransition = exitInfo;
         }
-
-        // Debug layer toggles
-        if (input.isKeyPressed(Input.KEYS.NUMROW_1)) {
-            this.renderBottomLayer = !this.renderBottomLayer;
-        } else if (input.isKeyPressed(Input.KEYS.NUMROW_2)) {
-            this.renderCollisionLayer = !this.renderCollisionLayer;
-        } else if (input.isKeyPressed(Input.KEYS.NUMROW_3)) {
-            this.renderTopLayer = !this.renderTopLayer;
-        }
     }
 
     render() {
@@ -274,12 +227,6 @@ export default class Room {
 
         // Render HUD on top of everything
         this.hud.render(this.player, this.roomNumber, this.score);
-
-        if (DEBUG) {
-            Room.renderGrid();
-            Room.renderInstructions();
-            this.renderExitDebug();
-        }
     }
 
     /**
@@ -311,24 +258,6 @@ export default class Room {
 
                 context.restore();
             }
-        });
-    }
-
-    /**
-     * Debug render for exits
-     */
-    renderExitDebug() {
-        this.exits.forEach((exit) => {
-            context.save();
-            context.strokeStyle = this.isCleared ? "lime" : "yellow";
-            context.lineWidth = 2;
-            context.strokeRect(
-                exit.x * Tile.SIZE,
-                exit.y * Tile.SIZE,
-                exit.width * Tile.SIZE,
-                exit.height * Tile.SIZE
-            );
-            context.restore();
         });
     }
 
@@ -384,27 +313,12 @@ export default class Room {
             ) {
                 return {
                     nextRoom: exit.leadsTo,
-                    entranceDirection: this.getOppositeDirection(
-                        exit.direction
-                    ),
+                    entranceDirection: "top",
                 };
             }
         }
 
         return null;
-    }
-
-    /**
-     * Get opposite direction for spawn positioning
-     */
-    getOppositeDirection(direction) {
-        const opposites = {
-            top: "bottom",
-            bottom: "top",
-            left: "right",
-            right: "left",
-        };
-        return opposites[direction];
     }
 
     /**
@@ -453,47 +367,5 @@ export default class Room {
     addScore(points) {
         this.score += points;
         console.log(`+${points} points! Total score: ${this.score}`);
-    }
-
-    /**
-     * Draws a grid of squares on the screen to help with debugging.
-     */
-    static renderGrid() {
-        context.save();
-        context.strokeStyle = "white";
-
-        for (let y = 1; y < CANVAS_HEIGHT / Tile.SIZE; y++) {
-            context.beginPath();
-            context.moveTo(0, y * Tile.SIZE);
-            context.lineTo(CANVAS_WIDTH, y * Tile.SIZE);
-            context.closePath();
-            context.stroke();
-
-            for (let x = 1; x < CANVAS_WIDTH / Tile.SIZE; x++) {
-                context.beginPath();
-                context.moveTo(x * Tile.SIZE, 0);
-                context.lineTo(x * Tile.SIZE, CANVAS_HEIGHT);
-                context.closePath();
-                context.stroke();
-            }
-        }
-
-        context.restore();
-    }
-
-    static renderInstructions() {
-        context.save();
-        context.translate(0, Tile.SIZE * 9);
-        context.fillStyle = "rgba(0, 0, 0, 0.75)";
-        context.fillRect(0, 0, Tile.SIZE * 5, Tile.SIZE * 2);
-        context.font = `12px PowerRed`;
-        context.textBaseline = "alphabetic";
-        context.fillStyle = "white";
-        [
-            `[1] Toggle Bottom Layer`,
-            `[2] Toggle Collision Layer`,
-            `[3] Toggle Top Layer`,
-        ].forEach((text, index) => context.fillText(text, 15, index * 16 + 22));
-        context.restore();
     }
 }
