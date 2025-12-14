@@ -115,8 +115,14 @@ export default class HighScoresState extends State {
             // Add new score
             scores.push(score);
 
-            // Sort descending and keep top MAX_SCORES
+            // Sort descending
             scores.sort((a, b) => b - a);
+
+            // Check if the new score made it into top 5 BEFORE slicing
+            const madeHighScore =
+                scores.indexOf(score) < HighScoresState.MAX_SCORES;
+
+            // Keep only top MAX_SCORES
             scores = scores.slice(0, HighScoresState.MAX_SCORES);
 
             // Save back
@@ -125,7 +131,7 @@ export default class HighScoresState extends State {
                 JSON.stringify(scores)
             );
 
-            return scores.indexOf(score) !== -1; // Return true if score made the list
+            return madeHighScore; // Return true only if score is in top 5
         } catch (e) {
             console.error("Failed to save high score:", e);
             return false;

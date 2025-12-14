@@ -82,7 +82,9 @@ export default class PlayState extends State {
                 // Check if game is complete
                 if (nextRoom > PlayState.TOTAL_ROOMS) {
                     console.log("All rooms cleared! Victory!");
-                    // TODO: Transition to VictoryState
+                    stateMachine.change(GameStateName.Victory, {
+                        score: this.score,
+                    });
                     return;
                 }
 
