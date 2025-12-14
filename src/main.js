@@ -6,6 +6,7 @@ import InstructionsState from "./states/InstructionsState.js";
 import HighScoresState from "./states/HighScoresState.js";
 import PauseState from "./states/PauseState.js";
 import GameOverState from "./states/GameOverState.js";
+import VictoryState from "./states/VictoryState.js";
 
 import {
     canvas,
@@ -41,6 +42,7 @@ stateMachine.add(GameStateName.HighScores, new HighScoresState());
 stateMachine.add(GameStateName.Play, new PlayState());
 stateMachine.add(GameStateName.Pause, new PauseState());
 stateMachine.add(GameStateName.GameOver, new GameOverState());
+stateMachine.add(GameStateName.Victory, new VictoryState());
 
 const game = new Game(
     stateMachine,
