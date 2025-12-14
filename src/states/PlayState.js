@@ -1,12 +1,23 @@
-import State from "../../../lib/State.js";
+import State from "../../lib/State.js";
 import Room from "../services/Room.js";
+import GameStateName from "../enums/GameStateName.js";
+import { input, stateMachine } from "../globals.js";
+import Input from "../../lib/Input.js";
 
 export default class PlayState extends State {
     static TOTAL_ROOMS = 5;
 
     constructor() {
         super();
+    }
 
+    enter(params = {}) {
+        // If resuming from pause, don't reset
+        if (params.resuming) {
+            return;
+        }
+
+        // Reset game state when starting new game
         this.currentRoomNumber = 1;
         this.score = 0;
         this.room = null;
@@ -42,6 +53,12 @@ export default class PlayState extends State {
     }
 
     update(dt) {
+        // Check for pause
+        if (input.isKeyPressed(Input.KEYS.ESCAPE)) {
+            stateMachine.change(GameStateName.Pause);
+            return;
+        }
+
         if (this.room) {
             this.room.update(dt);
 
