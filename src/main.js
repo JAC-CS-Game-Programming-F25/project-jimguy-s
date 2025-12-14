@@ -1,5 +1,7 @@
 import Game from "../lib/Game.js";
+import TitleScreenState from "./states/TitleScreenState.js";
 import PlayState from "./states/PlayState.js";
+import GameStateName from "./enums/GameStateName.js";
 import {
     canvas,
     CANVAS_HEIGHT,
@@ -14,22 +16,22 @@ import {
 // Set the dimensions of the play area.
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
-canvas.setAttribute("tabindex", "1"); // Allows the canvas to receive user input.
+canvas.setAttribute("tabindex", "1");
 
-// Now that the canvas element has been prepared, we can add it to the DOM.
+// Add to DOM
 document.body.appendChild(canvas);
 
+// Load assets
 const { images: imageDefinitions, fonts: fontDefinitions } = await fetch(
     "../src/config.json"
 ).then((response) => response.json());
 
-// Load all the assets from their definitions.
 images.load(imageDefinitions);
 fonts.load(fontDefinitions);
 
-// Add all the states to the state machine.
-// PlayState now handles loading rooms dynamically
-stateMachine.add("PlayState", new PlayState());
+// Add states
+stateMachine.add(GameStateName.TitleScreen, new TitleScreenState());
+stateMachine.add(GameStateName.Play, new PlayState());
 
 const game = new Game(
     stateMachine,
@@ -39,7 +41,10 @@ const game = new Game(
     CANVAS_HEIGHT
 );
 
+// Start at title screen instead of play
+stateMachine.change(GameStateName.TitleScreen);
+
 game.start();
 
-// Focus the canvas so that the player doesn't have to click on it.
+// Focus canvas
 canvas.focus();
