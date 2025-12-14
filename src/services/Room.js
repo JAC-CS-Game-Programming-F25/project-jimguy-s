@@ -15,6 +15,7 @@ import {
     input,
 } from "../globals.js";
 import Input from "../../lib/Input.js";
+import ItemFactory from "./ItemFactory.js";
 
 export default class Room {
     /**
@@ -32,6 +33,8 @@ export default class Room {
         previousScore = 0,
         entranceDirection = null
     ) {
+        this.objects = [];
+
         // Generate sprites from both tilesets
         const tilesSprites = Sprite.generateSpritesFromSpriteSheet(
             images.get(ImageName.Tiles),
@@ -179,18 +182,40 @@ export default class Room {
             enemy.update(dt);
         });
 
-        // Clean up dead enemies after their death animation
+        // Clean up dead enemies and drop items
         this.enemies = this.enemies.filter((enemy) => {
             if (enemy.cleanupReady) {
-                // Award score when enemy is cleaned up
+                // Award score
                 this.score += enemy.scoreValue;
                 console.log(
                     `+${enemy.scoreValue} points! Total score: ${this.score}`
                 );
+
+                // Try to drop an item
+                const droppedItem = enemy.dropItem();
+                if (droppedItem) {
+                    this.objects.push(droppedItem);
+                }
+
                 return false;
             }
             return true;
         });
+
+        // Update objects and check for player pickup
+        this.objects.forEach((object) => {
+            object.update(dt);
+
+            // Check if player collides with consumable item
+            if (object.isConsumable && !object.wasConsumed) {
+                if (object.didCollideWithPlayer(this.player)) {
+                    object.onConsume(this.player);
+                }
+            }
+        });
+
+        // Remove consumed objects
+        this.objects = this.objects.filter((object) => !object.cleanUp);
 
         // Check if room is cleared
         this.checkClear();
@@ -214,6 +239,11 @@ export default class Room {
         // Render all enemies
         this.enemies.forEach((enemy) => {
             enemy.render();
+        });
+
+        // Render all objects
+        this.objects.forEach((object) => {
+            object.render();
         });
 
         this.player.render();

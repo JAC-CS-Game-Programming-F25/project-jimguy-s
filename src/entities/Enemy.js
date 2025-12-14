@@ -10,6 +10,8 @@ import EnemyAttackingState from "../states/enemy/EnemyAttackingState.js";
 import EnemyDeadState from "../states/enemy/EnemyDeadState.js";
 import Tile from "../services/Tile.js";
 import { context } from "../globals.js";
+import ItemFactory from "../services/ItemFactory.js";
+import Item from "../objects/Item.js";
 
 export default class Enemy extends GameEntity {
     /**
@@ -160,9 +162,13 @@ export default class Enemy extends GameEntity {
 
         // Transition to dead state
         this.changeState(EnemyStateName.Dead);
+    }
 
-        // TODO: Award score to player
-        // TODO: Drop items
+    /**
+     * Drop item when enemy dies
+     */
+    dropItem() {
+        return ItemFactory.tryDropItem(this);
     }
 
     getDistanceToPlayer() {
