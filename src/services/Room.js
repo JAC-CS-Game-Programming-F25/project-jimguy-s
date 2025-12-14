@@ -14,8 +14,7 @@ import {
     images,
     input,
 } from "../globals.js";
-import Input from "../../lib/Input.js";
-import ItemFactory from "./ItemFactory.js";
+import BossHealthBar from "./UserInterface/BossHealthBar.js";
 
 export default class Room {
     /**
@@ -88,6 +87,8 @@ export default class Room {
         this.renderTopLayer = true;
 
         this.hud = new HUD();
+        this.bossHealthBar = new BossHealthBar();
+        this.boss = null; // Will be set if room has a boss
     }
 
     /**
@@ -169,9 +170,24 @@ export default class Room {
     }
 
     spawnEnemies() {
-        // Use factory to spawn enemies based on room number
+        // Spawn enemies based on room number
         this.enemies = EnemyFactory.spawnEnemies(this.roomNumber, this);
         this.totalEnemiesSpawned = this.enemies.length;
+
+        // Check if any enemy is a boss
+        this.boss = this.enemies.find((enemy) => enemy.isBoss) || null;
+
+        if (this.boss) {
+            console.log("Boss detected in room!", this.boss);
+            console.log(
+                "Boss health:",
+                this.boss.health,
+                "isDead:",
+                this.boss.isDead
+            );
+        } else {
+            console.log("No boss in this room");
+        }
     }
 
     update(dt) {
@@ -257,6 +273,21 @@ export default class Room {
 
         // Render HUD on top of everything
         this.hud.render(this.player, this.roomNumber, this.score);
+
+        // Render boss health bar if boss exists
+        if (this.boss) {
+            console.log(
+                "Boss exists - isDead:",
+                this.boss.isDead,
+                "health:",
+                this.boss.health
+            );
+        }
+
+        if (this.boss && !this.boss.isDead) {
+            console.log("Rendering boss health bar!");
+            this.bossHealthBar.render(this.boss, "ELITE SAMURAI");
+        }
     }
 
     /**

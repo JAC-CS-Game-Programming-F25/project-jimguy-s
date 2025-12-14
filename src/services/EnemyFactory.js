@@ -42,21 +42,74 @@ export default class EnemyFactory {
     }
 
     /**
-     * Main spawn function - creates enemies for a room
-     * Uses Zelda-style logic: pick ONE enemy type, spawn multiple
+     * Create a boss enemy (buffed version of regular enemy)
+     * @param {number} roomNumber
+     * @param {Room} room
+     * @param {Vector} position
+     * @returns {Enemy}
+     */
+    static createBoss(roomNumber, room, position) {
+        // Boss is a super-buffed Samurai
+        const bossDef = {
+            position: position,
+            health: 150, // 6x normal health
+            damage: 20, // 2.5x normal damage
+            speed: 30, // Slightly slower (more intimidating)
+            detectionRange: 8, // Better detection
+            attackRange: 1.5, // Slightly longer reach
+            scoreValue: 200, // Huge score bonus
+        };
+
+        const boss = new Samurai(bossDef, room);
+        boss.isBoss = true; // Mark as boss
+
+        console.log("BOSS CREATED - Elite Samurai!");
+
+        return boss;
+    }
+
+    /**
+     * Spawn enemies for a room based on room number
      */
     static spawnEnemies(roomNumber, room) {
         const enemies = [];
 
-        // Determine enemy count (increases with room number)
-        const enemyCount = this.getEnemyCountForRoom(roomNumber);
+        // ROOM 5: BOSS FIGHT
+        if (roomNumber === 5) {
+            console.log("Room 5: BOSS ROOM!");
 
-        // Pick ONE enemy type for this entire room (Zelda-style)
+            // Spawn boss in center
+            const bossPosition = {
+                x: Math.floor(room.bottomLayer.width / 2),
+                y: Math.floor(room.bottomLayer.height / 2),
+            };
+
+            const boss = this.createBoss(roomNumber, room, bossPosition);
+            enemies.push(boss);
+
+            // Add 2 minions to make it harder
+            const minionCount = 2;
+            for (let i = 0; i < minionCount; i++) {
+                const position = this.getValidSpawnPosition(room, enemies);
+                const minion = this.createEnemy(
+                    "tengu",
+                    roomNumber,
+                    room,
+                    position
+                );
+                enemies.push(minion);
+            }
+
+            console.log(`Boss room spawned: 1 boss + ${minionCount} minions`);
+            return enemies;
+        }
+
+        // ROOMS 1-4: Regular enemy spawning
+        const enemyCount = this.getEnemyCountForRoom(roomNumber);
         const enemyType = this.pickEnemyTypeForRoom(roomNumber);
 
         console.log(`Room ${roomNumber}: Spawning ${enemyCount} ${enemyType}s`);
 
-        // Spawn all enemies of the chosen type
         for (let i = 0; i < enemyCount; i++) {
             const position = this.getValidSpawnPosition(room, enemies);
             const enemy = this.createEnemy(
