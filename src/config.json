@@ -116,6 +116,13 @@
             "path": "../assets/images/Boss/Hit.png",
             "width": 384,
             "height": 48
+        },
+
+        {
+            "name": "hearts",
+            "path": "../assets/images/UI/Heart.png",
+            "width": 80,
+            "height": 16
         }
     ],
     "fonts": [

@@ -77,10 +77,9 @@ export default class PauseState extends State {
             this.buttons[this.selectedButtonIndex].isHovered = true;
         }
 
-        // Activate selected button with Enter or Space
+        // Activate selected button with Enter
         if (
-            input.isKeyPressed(Input.KEYS.ENTER) ||
-            input.isKeyPressed(Input.KEYS.SPACE)
+            input.isKeyPressed(Input.KEYS.ENTER)
         ) {
             this.buttons[this.selectedButtonIndex].onClick();
         }

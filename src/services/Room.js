@@ -5,6 +5,7 @@ import ImageName from "../enums/ImageName.js";
 import Tile from "./Tile.js";
 import Layer from "./Layer.js";
 import EnemyFactory from "./EnemyFactory.js";
+import HUD from "./UserInterface/HUD.js";
 import {
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
@@ -82,6 +83,8 @@ export default class Room {
         this.renderBottomLayer = true;
         this.renderCollisionLayer = true;
         this.renderTopLayer = true;
+
+        this.hud = new HUD();
     }
 
     /**
@@ -255,7 +258,7 @@ export default class Room {
             this.collisionLayer.render();
         }
 
-        // Render all enemies (including dead ones playing death animation)
+        // Render all enemies
         this.enemies.forEach((enemy) => {
             enemy.render();
         });
@@ -266,8 +269,11 @@ export default class Room {
             this.topLayer.render();
         }
 
-        // Render barriers (visual indication that exits are blocked)
+        // Render barriers
         this.renderBarriers();
+
+        // Render HUD on top of everything
+        this.hud.render(this.player, this.roomNumber, this.score);
 
         if (DEBUG) {
             Room.renderGrid();
