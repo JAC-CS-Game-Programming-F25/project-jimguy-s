@@ -71,6 +71,16 @@ export default class PlayState extends State {
                 return;
             }
 
+            // Check if Room 5 is cleared for victory
+            if (this.currentRoomNumber === 5 && this.room.isCleared) {
+                console.log("TRIGGERING VICTORY STATE!");
+                const finalScore = this.room.getScore();
+                stateMachine.change(GameStateName.Victory, {
+                    score: finalScore,
+                });
+                return;
+            }
+
             // Check if player walked to an exit
             if (this.room.triggerRoomTransition) {
                 const { nextRoom, entranceDirection } =
@@ -78,15 +88,6 @@ export default class PlayState extends State {
 
                 // Update score before transitioning
                 this.score = this.room.getScore();
-
-                // Check if game is complete
-                if (nextRoom > PlayState.TOTAL_ROOMS) {
-                    console.log("All rooms cleared! Victory!");
-                    stateMachine.change(GameStateName.Victory, {
-                        score: this.score,
-                    });
-                    return;
-                }
 
                 // Load the next room
                 console.log(`Transitioning to room ${nextRoom}...`);

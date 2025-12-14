@@ -16,12 +16,12 @@ export default class Tengu extends Enemy {
         // Set Tengu-specific stats
         const tenguDef = {
             ...entityDefinition,
-            health: entityDefinition.health || 20,
+            health: entityDefinition.health || 35,
             damage: entityDefinition.damage || 7,
-            speed: entityDefinition.speed || 50,
-            detectionRange: entityDefinition.detectionRange || 7,
-            attackRange: entityDefinition.attackRange || 1.5,
-            scoreValue: entityDefinition.scoreValue || 10,
+            speed: entityDefinition.speed || 40,
+            detectionRange: entityDefinition.detectionRange || 5,
+            attackRange: entityDefinition.attackRange || 1,
+            scoreValue: entityDefinition.scoreValue || 25,
         };
 
         super(tenguDef, room);

@@ -16,11 +16,11 @@ export default class Samurai extends Enemy {
         // Set Samurai-specific stats
         const samuraiDef = {
             ...entityDefinition,
-            health: entityDefinition.health || 30,
-            damage: entityDefinition.damage || 10,
-            speed: entityDefinition.speed || 40,
-            detectionRange: entityDefinition.detectionRange || 6,
-            attackRange: entityDefinition.attackRange || 1.5,
+            health: entityDefinition.health || 20,
+            damage: entityDefinition.damage || 5,
+            speed: entityDefinition.speed || 30,
+            detectionRange: entityDefinition.detectionRange || 5,
+            attackRange: entityDefinition.attackRange || 1,
             scoreValue: entityDefinition.scoreValue || 15,
         };
 

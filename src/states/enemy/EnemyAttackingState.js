@@ -18,16 +18,16 @@ export default class EnemyAttackingState extends State {
 
         // Attack animations - single frame per direction
         this.animation = {
-            [Direction.Down]: new Animation([0], 0.3),
-            [Direction.Up]: new Animation([1], 0.3),
-            [Direction.Left]: new Animation([2], 0.3),
-            [Direction.Right]: new Animation([3], 0.3),
+            [Direction.Down]: new Animation([0], 0.4),
+            [Direction.Up]: new Animation([1], 0.4),
+            [Direction.Left]: new Animation([2], 0.4),
+            [Direction.Right]: new Animation([3], 0.4),
         };
 
         this.attackTimer = 0;
-        this.attackDuration = 0.3; // Duration of attack animation
+        this.attackDuration = 0.85; // Duration of attack animation
         this.hasHit = false;
-        this.attackCooldown = 1.0; // Time before can attack again
+        this.attackCooldown = 2; // Time before can attack again
     }
 
     enter() {

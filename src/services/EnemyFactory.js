@@ -18,63 +18,119 @@ export default class EnemyFactory {
         }
     }
 
-    /**
-     * Create a Samurai enemy
-     * @param {number} roomNumber
-     * @param {Vector} position
-     * @param {Room} room
-     * @returns {Samurai}
-     */
     static createSamurai(roomNumber, position, room) {
+        // Scale health and damage slightly with room number
         const entityDef = {
             position: position,
-            health: 30 + roomNumber * 5, // Scale with room number
-            damage: 10 + roomNumber * 2,
-            speed: 40,
+            health: 25 + (roomNumber - 1) * 3, // Room 1: 25 HP, Room 5: 37 HP
+            damage: 8 + (roomNumber - 1) * 1, // Room 1: 8 dmg, Room 5: 12 dmg
+            speed: 35,
         };
 
         return new Samurai(entityDef, room);
     }
 
-    /**
-     * Create a Tengu enemy
-     * @param {number} roomNumber
-     * @param {Vector} position
-     * @param {Room} room
-     * @returns {Tengu}
-     */
     static createTengu(roomNumber, position, room) {
         const entityDef = {
             position: position,
-            health: 20 + roomNumber * 3, // Scale with room number
-            damage: 7 + roomNumber * 2,
-            speed: 50,
+            health: 15 + (roomNumber - 1) * 2, // Room 1: 15 HP, Room 5: 23 HP
+            damage: 5 + (roomNumber - 1) * 1, // Room 1: 5 dmg, Room 5: 9 dmg
+            speed: 55,
         };
 
         return new Tengu(entityDef, room);
     }
 
     /**
+     * Main spawn function - creates enemies for a room
+     * Uses Zelda-style logic: pick ONE enemy type, spawn multiple
+     */
+    static spawnEnemies(roomNumber, room) {
+        const enemies = [];
+
+        // Determine enemy count (increases with room number)
+        const enemyCount = this.getEnemyCountForRoom(roomNumber);
+
+        // Pick ONE enemy type for this entire room (Zelda-style)
+        const enemyType = this.pickEnemyTypeForRoom(roomNumber);
+
+        console.log(`Room ${roomNumber}: Spawning ${enemyCount} ${enemyType}s`);
+
+        // Spawn all enemies of the chosen type
+        for (let i = 0; i < enemyCount; i++) {
+            const position = this.getValidSpawnPosition(room, enemies);
+            const enemy = this.createEnemy(
+                enemyType,
+                roomNumber,
+                room,
+                position
+            );
+
+            if (enemy) {
+                enemies.push(enemy);
+            }
+        }
+
+        return enemies;
+    }
+
+    /**
+     * Determine how many enemies to spawn based on room number
+     */
+    static getEnemyCountForRoom(roomNumber) {
+        switch (roomNumber) {
+            case 1:
+                return 3; // Easy start
+            case 2:
+                return 4;
+            case 3:
+                return 5;
+            case 4:
+                return 6;
+            case 5:
+                return 7; // Challenging final room
+            default:
+                return 4;
+        }
+    }
+
+    /**
+     * Pick which enemy type to spawn in this room
+     * Earlier rooms favor Samurai, later rooms can be either
+     */
+    static pickEnemyTypeForRoom(roomNumber) {
+        if (roomNumber === 1) {
+            return "samurai"; // Always samurai for first room (easier)
+        } else if (roomNumber === 2) {
+            return Math.random() < 0.7 ? "samurai" : "tengu"; // 70% samurai
+        } else {
+            return Math.random() < 0.5 ? "samurai" : "tengu"; // 50/50 mix
+        }
+    }
+
+    /**
      * Get a valid spawn position that avoids walls and other enemies
-     * @param {Room} room
-     * @param {Array} existingEnemies - Already spawned enemies to avoid
-     * @returns {Vector}
      */
     static getValidSpawnPosition(room, existingEnemies) {
         const collisionLayer = room.collisionLayer;
-        const maxAttempts = 100;
+        const maxAttempts = 50;
         let attempts = 0;
 
         while (attempts < maxAttempts) {
-            // Random position within room bounds (avoiding edges)
+            // Random position within safe room bounds
             const x =
                 Math.floor(Math.random() * (room.bottomLayer.width - 4)) + 2;
             const y =
                 Math.floor(Math.random() * (room.bottomLayer.height - 4)) + 2;
 
-            // Check if this position is valid (not on collision tiles)
             if (
-                this.isValidSpawnPosition(x, y, collisionLayer, existingEnemies)
+                this.isValidSpawnPosition(
+                    x,
+                    y,
+                    collisionLayer,
+                    existingEnemies,
+                    room
+                )
             ) {
                 return { x, y };
             }
@@ -83,7 +139,7 @@ export default class EnemyFactory {
         }
 
         // Fallback to center if no valid position found
-        console.warn("Could not find valid spawn position, using center");
+        console.warn("Could not find valid spawn position, using fallback");
         return {
             x: Math.floor(room.bottomLayer.width / 2),
             y: Math.floor(room.bottomLayer.height / 2),
@@ -91,21 +147,16 @@ export default class EnemyFactory {
     }
 
     /**
-     * Check if a spawn position is valid (no collisions, not too close to other enemies)
-     * @param {number} x
-     * @param {number} y
-     * @param {Layer} collisionLayer
-     * @param {Array} existingEnemies
-     * @returns {boolean}
+     * Check if a spawn position is valid
      */
-    static isValidSpawnPosition(x, y, collisionLayer, existingEnemies) {
+    static isValidSpawnPosition(x, y, collisionLayer, existingEnemies, room) {
         // Check if tile is collidable
         const tile = collisionLayer.getTile(x, y);
         if (tile !== null) {
-            return false; // There's a collision tile here
+            return false;
         }
 
-        // Check surrounding tiles (2x2 area for enemy size)
+        // Check surrounding tiles (2x2 area)
         const topRightTile = collisionLayer.getTile(x + 1, y);
         const bottomLeftTile = collisionLayer.getTile(x, y + 1);
         const bottomRightTile = collisionLayer.getTile(x + 1, y + 1);
@@ -118,104 +169,28 @@ export default class EnemyFactory {
             return false;
         }
 
-        // Check distance from other enemies (minimum 3 tiles apart)
-        const minDistance = 3;
+        // Don't spawn too close to player start position
+        const playerSpawn = room.player ? room.player.position : { x: 7, y: 5 };
+        const distToPlayer = Math.sqrt(
+            Math.pow(x - playerSpawn.x, 2) + Math.pow(y - playerSpawn.y, 2)
+        );
+
+        if (distToPlayer < 3) {
+            return false; // Too close to player
+        }
+
+        // Check distance from other enemies (minimum 2.5 tiles apart)
+        const minDistance = 2.5;
         for (const enemy of existingEnemies) {
             const dx = enemy.position.x - x;
             const dy = enemy.position.y - y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
             if (distance < minDistance) {
-                return false; // Too close to another enemy
+                return false;
             }
         }
 
         return true;
-    }
-
-    /**
-     * Get predefined spawn positions for specific rooms
-     * @param {number} roomNumber
-     * @param {Room} room
-     * @returns {Array<Vector>} Array of spawn positions
-     */
-    static getPredefinedSpawnPositions(roomNumber, room) {
-        // For Room 1, use these specific spawn positions
-        // You can customize this for each room
-        const roomSpawns = {
-            1: [
-                { x: 4, y: 10 },
-                { x: 7, y: 10 },
-                { x: 10, y: 10 },
-            ],
-            2: [
-                { x: 3, y: 3 },
-                { x: 11, y: 3 },
-                { x: 3, y: 8 },
-                { x: 11, y: 8 },
-            ],
-            3: [
-                { x: 4, y: 4 },
-                { x: 10, y: 4 },
-                { x: 4, y: 8 },
-                { x: 10, y: 8 },
-                { x: 7, y: 6 },
-            ],
-            4: [
-                { x: 3, y: 3 },
-                { x: 11, y: 3 },
-                { x: 3, y: 8 },
-                { x: 11, y: 8 },
-                { x: 7, y: 5 },
-                { x: 7, y: 7 },
-            ],
-            5: [
-                // Boss room - fewer regular enemies
-                { x: 4, y: 4 },
-                { x: 10, y: 4 },
-            ],
-        };
-
-        return roomSpawns[roomNumber] || [];
-    }
-
-    /**
-     * Spawn enemies for a room based on room number
-     * @param {number} roomNumber
-     * @param {Room} room
-     * @returns {Array<Enemy>}
-     */
-    static spawnEnemies(roomNumber, room) {
-        const enemies = [];
-
-        // Get predefined positions or generate valid ones
-        let spawnPositions = this.getPredefinedSpawnPositions(roomNumber, room);
-
-        // Calculate enemy count based on room number
-        const enemyCount = Math.min(2 + roomNumber, 6); // 3-6 enemies
-
-        // If we don't have predefined positions, generate them
-        if (spawnPositions.length === 0) {
-            for (let i = 0; i < enemyCount; i++) {
-                const position = this.getValidSpawnPosition(room, enemies);
-                spawnPositions.push(position);
-            }
-        }
-
-        // Create enemies at spawn positions
-        for (let i = 0; i < Math.min(enemyCount, spawnPositions.length); i++) {
-            const position = spawnPositions[i];
-
-            // Mix of enemy types (60% samurai, 40% tengu)
-            const type = Math.random() < 0.6 ? "samurai" : "tengu";
-            const enemy = this.createEnemy(type, roomNumber, room, position);
-
-            if (enemy) {
-                enemies.push(enemy);
-            }
-        }
-
-        console.log(`Spawned ${enemies.length} enemies for room ${roomNumber}`);
-        return enemies;
     }
 }
