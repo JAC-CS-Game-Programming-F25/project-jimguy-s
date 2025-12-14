@@ -23,16 +23,13 @@ const { images: imageDefinitions, fonts: fontDefinitions } = await fetch(
     "../src/config.json"
 ).then((response) => response.json());
 
-const mapDefinition = await fetch("../assets/maps/room1.json").then(
-    (response) => response.json()
-);
-
 // Load all the assets from their definitions.
 images.load(imageDefinitions);
 fonts.load(fontDefinitions);
 
 // Add all the states to the state machine.
-stateMachine.add("PlayState", new PlayState(mapDefinition));
+// PlayState now handles loading rooms dynamically
+stateMachine.add("PlayState", new PlayState());
 
 const game = new Game(
     stateMachine,

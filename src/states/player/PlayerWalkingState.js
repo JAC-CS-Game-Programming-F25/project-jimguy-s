@@ -132,6 +132,22 @@ export default class PlayerWalkingState extends State {
         const width = this.player.dimensions.x / Tile.SIZE;
         const height = this.player.dimensions.y / Tile.SIZE;
 
+        // Check canvas boundaries (room dimensions)
+        if (x < 0 || y < 0) {
+            return false;
+        }
+        if (
+            x + width > this.bottomLayer.width ||
+            y + height > this.bottomLayer.height
+        ) {
+            return false;
+        }
+
+        // Check if blocked by barrier
+        if (this.player.room.isBlockedByBarrier(x, y)) {
+            return false;
+        }
+
         // Check all four corners of the player's hitbox
         const topLeftTile = this.collisionLayer.getTile(
             Math.floor(x),
