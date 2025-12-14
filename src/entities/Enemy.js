@@ -12,8 +12,10 @@ import Tile from "../services/Tile.js";
 import { context } from "../globals.js";
 import ItemFactory from "../services/ItemFactory.js";
 import Item from "../objects/Item.js";
+import BossHealthBar from "../services/UserInterface/BossHealthBar.js";
 
 export default class Enemy extends GameEntity {
+    static BossHealthBar = new BossHealthBar();
     /**
      * Base enemy class that all enemy types will extend.
      *
@@ -34,6 +36,8 @@ export default class Enemy extends GameEntity {
         this.detectionRange = entityDefinition.detectionRange || 5; // tiles
         this.attackRange = entityDefinition.attackRange || 1.3; // tiles
         this.scoreValue = entityDefinition.scoreValue || 10;
+
+        this.isBoss = false;
 
         // State tracking
         this.isDead = false;
@@ -116,6 +120,13 @@ export default class Enemy extends GameEntity {
     }
 
     renderHealthBar() {
+        // Use special boss health bar if this is a boss
+        if (this.isBoss) {
+            Enemy.BossHealthBar.render(this);
+            return;
+        }
+
+        // Regular enemy health bar
         const barWidth = 16;
         const barHeight = 3;
         const x = Math.floor(this.canvasPosition.x);
