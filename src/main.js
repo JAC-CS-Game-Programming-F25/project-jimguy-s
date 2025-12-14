@@ -4,6 +4,7 @@ import PlayState from "./states/PlayState.js";
 import GameStateName from "./enums/GameStateName.js";
 import InstructionsState from "./states/InstructionsState.js";
 import HighScoresState from "./states/HighScoresState.js";
+import PauseState from "./states/PauseState.js";
 import {
     canvas,
     CANVAS_HEIGHT,
@@ -36,6 +37,7 @@ stateMachine.add(GameStateName.TitleScreen, new TitleScreenState());
 stateMachine.add(GameStateName.Instructions, new InstructionsState());
 stateMachine.add(GameStateName.HighScores, new HighScoresState());
 stateMachine.add(GameStateName.Play, new PlayState());
+stateMachine.add(GameStateName.Pause, new PauseState());
 
 const game = new Game(
     stateMachine,
