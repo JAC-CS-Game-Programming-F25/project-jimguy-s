@@ -62,7 +62,7 @@ export default class HighScoresState extends State {
 
         // Draw scores
         context.font = "14px gameFont";
-        const startY = 50;
+        const startY = 35;
         const lineHeight = 22;
 
         if (this.highScores.length === 0) {

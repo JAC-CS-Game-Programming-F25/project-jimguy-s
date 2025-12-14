@@ -62,6 +62,15 @@ export default class PlayState extends State {
         if (this.room) {
             this.room.update(dt);
 
+            // Check if player died
+            if (this.room.player.isDead) {
+                const finalScore = this.room.getScore();
+                stateMachine.change(GameStateName.GameOver, {
+                    score: finalScore,
+                });
+                return;
+            }
+
             // Check if player walked to an exit
             if (this.room.triggerRoomTransition) {
                 const { nextRoom, entranceDirection } =

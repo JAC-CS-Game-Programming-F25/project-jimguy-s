@@ -51,7 +51,7 @@ export default class PauseState extends State {
     update(dt) {
         // ESC to resume
         if (input.isKeyPressed(Input.KEYS.ESCAPE)) {
-            stateMachine.change(GameStateName.Play);
+            stateMachine.change(GameStateName.Play, { resuming: true });
             return;
         }
 
