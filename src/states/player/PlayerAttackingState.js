@@ -5,22 +5,16 @@ import Direction from "../../enums/Direction.js";
 import PlayerStateName from "../../enums/PlayerStateName.js";
 import Tile from "../../services/Tile.js";
 import SoundName from "../../enums/SoundName.js";
-import MusicManager from "../../services/MusicManager.js";
 import { sounds } from "../../globals.js";
+import Vector from "../../../lib/Vector.js";
+import Particle from "../../../lib/Particle.js";
 
 export default class PlayerAttackingState extends State {
-    /**
-     * In this state, the player performs an attack animation.
-     * The player cannot move during the attack.
-     *
-     * @param {Player} player
-     */
     constructor(player) {
         super();
 
         this.player = player;
 
-        // Attack animations - single frame per direction
         this.animation = {
             [Direction.Down]: new Animation([0], 0.3),
             [Direction.Up]: new Animation([1], 0.3),
@@ -29,26 +23,22 @@ export default class PlayerAttackingState extends State {
         };
 
         this.attackTimer = 0;
-        this.attackDuration = 0.3; // Duration of attack
-        this.damageDealt = false; // Track if damage was dealt THIS attack
-        this.attackDamage = 15; // Base attack damage
+        this.attackDuration = 0.3;
+        this.damageDealt = false;
+        this.attackDamage = 15;
     }
 
     enter() {
         console.log("=== ENTERING ATTACK STATE ===");
         sounds.play(SoundName.Attack);
 
-        // Switch to attack sprites
         this.player.sprites = this.player.attackSprites;
         this.player.currentAnimation = this.animation[this.player.direction];
         this.player.currentAnimation.refresh();
         this.player.currentFrame =
             this.player.currentAnimation.getCurrentFrame();
 
-        // Set attacking flag
         this.player.isAttacking = true;
-
-        // Reset timers and flags
         this.attackTimer = 0;
         this.damageDealt = false;
 
@@ -61,7 +51,6 @@ export default class PlayerAttackingState extends State {
     update(dt) {
         this.attackTimer += dt;
 
-        // Damage window: ONLY between 0.1 and 0.11 seconds (very narrow window)
         if (
             !this.damageDealt &&
             this.attackTimer >= 0.1 &&
@@ -69,10 +58,9 @@ export default class PlayerAttackingState extends State {
         ) {
             console.log("=== DAMAGE WINDOW - Checking for hits ===");
             this.dealDamage();
-            this.damageDealt = true; // Mark as done - NEVER check again this attack
+            this.damageDealt = true;
         }
 
-        // Check if attack is complete
         if (this.attackTimer >= this.attackDuration) {
             console.log("=== Attack complete, returning to idle ===");
             this.player.changeState(PlayerStateName.Idling);
@@ -80,20 +68,17 @@ export default class PlayerAttackingState extends State {
     }
 
     dealDamage() {
-        // Create hitbox based on direction
         const hitbox = this.createHitbox();
 
         console.log("Attack hitbox:", hitbox);
         console.log("Player position:", this.player.position);
 
-        // Get all living enemies
         const enemies = this.player.room.enemies.filter((e) => !e.isDead);
 
         console.log(`Checking ${enemies.length} enemies for hits...`);
 
         let hitCount = 0;
 
-        // Check each enemy
         enemies.forEach((enemy, index) => {
             const inHitbox = this.isInHitbox(enemy, hitbox);
 
@@ -109,8 +94,29 @@ export default class PlayerAttackingState extends State {
                 const success = enemy.takeDamage(damage);
 
                 if (success) {
-                    console.log(`✓ HIT! Dealt ${damage} damage to enemy`);
+                    console.log(`✔ HIT! Dealt ${damage} damage to enemy`);
                     hitCount++;
+
+                    // JUICE: Impact particles! 💥
+                    const impactPos = new Vector(
+                        enemy.canvasPosition.x + enemy.dimensions.x / 2,
+                        enemy.canvasPosition.y + enemy.dimensions.y / 2
+                    );
+
+                    // Calculate hit direction
+                    const direction = new Vector(
+                        enemy.position.x - this.player.position.x,
+                        enemy.position.y - this.player.position.y
+                    );
+
+                    const particles = Particle.createImpact(
+                        impactPos,
+                        direction
+                    );
+                    this.player.room.addParticles(particles);
+
+                    // JUICE: Small screen shake on hit
+                    this.player.room.screenShake.shake(3, 0.15);
                 } else {
                     console.log(`✗ Enemy was invulnerable`);
                 }
@@ -131,7 +137,6 @@ export default class PlayerAttackingState extends State {
         let x = this.player.position.x;
         let y = this.player.position.y;
 
-        // Offset hitbox based on direction
         switch (this.player.direction) {
             case Direction.Up:
                 y -= reach;
@@ -156,7 +161,6 @@ export default class PlayerAttackingState extends State {
         const ew = enemy.dimensions.x / Tile.SIZE;
         const eh = enemy.dimensions.y / Tile.SIZE;
 
-        // AABB collision
         return (
             ex < hitbox.x + hitbox.width &&
             ex + ew > hitbox.x &&

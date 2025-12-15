@@ -6,6 +6,9 @@ import Tile from "./Tile.js";
 import Layer from "./Layer.js";
 import EnemyFactory from "./EnemyFactory.js";
 import HUD from "./UserInterface/HUD.js";
+import BossHealthBar from "./UserInterface/BossHealthBar.js";
+import ScreenShake from "./Juice/ScreenShake.js";
+import Particle from "../../lib/Particle.js";
 import {
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
@@ -13,19 +16,11 @@ import {
     DEBUG,
     images,
     input,
+    timer,
 } from "../globals.js";
-import BossHealthBar from "./UserInterface/BossHealthBar.js";
+import Easing from "../../lib/Easing.js";
 
 export default class Room {
-    /**
-     * The collection of layers, sprites,
-     * and characters that comprises the world.
-     *
-     * @param {object} roomDefinition JSON from Tiled room editor.
-     * @param {number} roomNumber The current room number
-     * @param {number} previousScore Score carried from previous room
-     * @param {string} entranceDirection Direction player entered from ('top', 'bottom', 'left', 'right', or null for first room)
-     */
     constructor(
         roomDefinition,
         roomNumber = 1,
@@ -34,6 +29,11 @@ export default class Room {
         playerData = null
     ) {
         this.objects = [];
+
+        // JUICE: Particle and effect systems
+        this.particles = [];
+        this.damageNumbers = [];
+        this.screenShake = new ScreenShake();
 
         // Generate sprites from both tilesets
         const tilesSprites = Sprite.generateSpritesFromSpriteSheet(
@@ -48,7 +48,6 @@ export default class Room {
             Tile.SIZE
         );
 
-        // Combine sprites arrays
         const sprites = [...tilesSprites, ...buildingsSprites];
 
         this.bottomLayer = new Layer(
@@ -62,14 +61,9 @@ export default class Room {
         this.topLayer = new Layer(roomDefinition.layers[Layer.TOP], sprites);
 
         this.roomNumber = roomNumber;
-
-        // Define exits for each room
         this.exits = this.defineExits();
-
-        // Define blocked barriers (these block exits until room is cleared)
         this.barriers = this.defineBarriers();
 
-        // Determine player spawn position based on entrance
         const spawnPosition = this.getSpawnPosition(entranceDirection);
         this.player = new Player({ position: spawnPosition }, this);
 
@@ -78,29 +72,22 @@ export default class Room {
             this.player.maxHealth = playerData.maxHealth;
             this.player.damageBoost = playerData.damageBoost;
         }
-        // Score tracking
-        this.score = previousScore;
 
-        // Enemy management
+        this.score = previousScore;
         this.enemies = [];
         this.totalEnemiesSpawned = 0;
         this.spawnEnemies();
         this.isCleared = false;
 
-        // Debug toggles
         this.renderBottomLayer = true;
         this.renderCollisionLayer = true;
         this.renderTopLayer = true;
 
         this.hud = new HUD();
         this.bossHealthBar = new BossHealthBar();
-        this.boss = null; // Will be set if room has a boss
+        this.boss = null;
     }
 
-    /**
-     * Define exit zones for this room
-     * Only allows forward progression (no going back)
-     */
     defineExits() {
         const exitDefinitions = {
             1: [
@@ -143,63 +130,68 @@ export default class Room {
                     leadsTo: 5,
                 },
             ],
-            5: [
-                // No exit - final room triggers victory when cleared
-            ],
+            5: [],
         };
 
         return exitDefinitions[this.roomNumber] || [];
     }
 
-    /**
-     * Define barriers that block exits until room is cleared
-     */
     defineBarriers() {
-        // Barriers are positioned at exits and removed when room is cleared
         return this.exits.map((exit) => ({
             ...exit,
-            active: true, // Barriers start active
+            active: true,
         }));
     }
 
-    /**
-     * Get spawn position based on which direction player entered from
-     */
     getSpawnPosition(entranceDirection) {
-        // Room 1 starts in center
         if (entranceDirection === null) {
-            return new Vector(7, 9); // Start near bottom-center
+            return new Vector(7, 9);
         }
-
-        // All other rooms enter from top (coming from previous room)
-        return new Vector(7, 1.5); // Spawn near top exit
+        return new Vector(7, 1.5);
     }
 
     spawnEnemies() {
-        // Spawn enemies based on room number
         this.enemies = EnemyFactory.spawnEnemies(this.roomNumber, this);
         this.totalEnemiesSpawned = this.enemies.length;
-
-        // Check if any enemy is a boss
         this.boss = this.enemies.find((enemy) => enemy.isBoss) || null;
 
         if (this.boss) {
             console.log("Boss detected in room!", this.boss);
-            console.log(
-                "Boss health:",
-                this.boss.health,
-                "isDead:",
-                this.boss.isDead
-            );
-        } else {
-            console.log("No boss in this room");
         }
     }
 
+    /**
+     * JUICE: Add particles to the room
+     */
+    addParticles(particles) {
+        this.particles.push(...particles);
+    }
+
+    /**
+     * JUICE: Add damage number
+     */
+    addDamageNumber(damage, position, color = "#ff0000") {
+        this.damageNumbers.push(new DamageNumber(damage, position, color));
+    }
+
     update(dt) {
+        // JUICE: Update screen shake
+        this.screenShake.update(dt);
+
+        // JUICE: Update particles
+        this.particles = this.particles.filter((particle) => {
+            particle.update(dt);
+            return !particle.isDead;
+        });
+
+        // JUICE: Update damage numbers
+        this.damageNumbers = this.damageNumbers.filter((num) => {
+            num.update(dt);
+            return !num.isDead;
+        });
+
         this.player.update(dt);
 
-        // Update all enemies
         this.enemies.forEach((enemy) => {
             enemy.update(dt);
         });
@@ -207,13 +199,20 @@ export default class Room {
         // Clean up dead enemies and drop items
         this.enemies = this.enemies.filter((enemy) => {
             if (enemy.cleanupReady) {
-                // Award score
                 this.score += enemy.scoreValue;
                 console.log(
                     `+${enemy.scoreValue} points! Total score: ${this.score}`
                 );
 
-                // Try to drop an item
+                // JUICE: Spawn explosion particles on enemy death
+                const particlePos = new Vector(
+                    enemy.canvasPosition.x + enemy.dimensions.x / 2,
+                    enemy.canvasPosition.y + enemy.dimensions.y / 2
+                );
+                this.addParticles(
+                    Particle.createExplosion(particlePos, "#ff4444", 20)
+                );
+
                 const droppedItem = enemy.dropItem();
                 if (droppedItem) {
                     this.objects.push(droppedItem);
@@ -228,15 +227,29 @@ export default class Room {
         this.objects.forEach((object) => {
             object.update(dt);
 
-            // Check if player collides with consumable item
             if (object.isConsumable && !object.wasConsumed) {
                 if (object.didCollideWithPlayer(this.player)) {
+                    // JUICE: Spawn sparkle particles on item pickup
+                    const particlePos = new Vector(
+                        object.position.x + object.dimensions.x / 2,
+                        object.position.y + object.dimensions.y / 2
+                    );
+
+                    // Different colors for different items
+                    const color =
+                        object.constructor.name === "HealthPotion"
+                            ? "#ff66ff"
+                            : "#ffdd00";
+
+                    this.addParticles(
+                        Particle.createSparkles(particlePos, color)
+                    );
+
                     object.onConsume(this.player);
                 }
             }
         });
 
-        // Remove consumed objects
         this.objects = this.objects.filter((object) => !object.cleanUp);
 
         // Check if room is cleared
@@ -250,6 +263,11 @@ export default class Room {
     }
 
     render() {
+        context.save();
+
+        // JUICE: Apply screen shake
+        this.screenShake.apply(context);
+
         if (this.renderBottomLayer) {
             this.bottomLayer.render();
         }
@@ -258,12 +276,10 @@ export default class Room {
             this.collisionLayer.render();
         }
 
-        // Render all enemies
         this.enemies.forEach((enemy) => {
             enemy.render();
         });
 
-        // Render all objects
         this.objects.forEach((object) => {
             object.render();
         });
@@ -277,35 +293,37 @@ export default class Room {
         // Render barriers
         this.renderBarriers();
 
-        // Render HUD on top of everything
+        // JUICE: Render particles
+        this.particles.forEach((particle) => {
+            particle.render();
+        });
+
+        // JUICE: Render damage numbers
+        this.damageNumbers.forEach((num) => {
+            num.render();
+        });
+
+        // JUICE: Reset screen shake
+        this.screenShake.reset(context);
+
+        context.restore();
+
+        // Render HUD on top (unaffected by shake)
         this.hud.render(this.player, this.roomNumber, this.score);
 
-        // Render boss health bar if boss exists
-        if (this.boss) {
-            console.log(
-                "Boss exists - isDead:",
-                this.boss.isDead,
-                "health:",
-                this.boss.health
-            );
-        }
-
         if (this.boss && !this.boss.isDead) {
-            console.log("Rendering boss health bar!");
             this.bossHealthBar.render(this.boss, "ELITE SAMURAI");
         }
     }
 
-    /**
-     * Render visual barriers at blocked exits
-     */
     renderBarriers() {
         this.barriers.forEach((barrier) => {
             if (barrier.active) {
                 context.save();
 
-                // Draw a semi-transparent red barrier
-                context.fillStyle = "rgba(255, 0, 0, 0.3)";
+                // JUICE: Animated barrier with pulsing effect
+                const pulse = Math.sin(Date.now() / 200) * 0.1 + 0.3;
+                context.fillStyle = `rgba(255, 0, 0, ${pulse})`;
                 context.fillRect(
                     barrier.x * Tile.SIZE,
                     barrier.y * Tile.SIZE,
@@ -313,8 +331,7 @@ export default class Room {
                     barrier.height * Tile.SIZE
                 );
 
-                // Draw barrier border
-                context.strokeStyle = "rgba(200, 0, 0, 0.8)";
+                context.strokeStyle = `rgba(200, 0, 0, ${pulse + 0.3})`;
                 context.lineWidth = 2;
                 context.strokeRect(
                     barrier.x * Tile.SIZE,
@@ -328,40 +345,55 @@ export default class Room {
         });
     }
 
-    /**
-     * Check if room is cleared - called every frame
-     */
     checkClear() {
         if (this.isCleared) return;
 
-        // Check if all enemies are dead
         const allEnemiesDead = this.enemies.every((enemy) => enemy.isDead);
         const noEnemiesLeft = this.enemies.length === 0;
 
         if ((allEnemiesDead || noEnemiesLeft) && this.totalEnemiesSpawned > 0) {
             this.isCleared = true;
 
-            // Remove all barriers
+            // JUICE: BARRIER BREAK EFFECT! 🎆
             this.barriers.forEach((barrier) => {
-                barrier.active = false;
+                if (barrier.active) {
+                    // Screen shake when barriers drop
+                    this.screenShake.shake(8, 0.5);
+
+                    // Spawn barrier break particles
+                    const particles = Particle.createBarrierBreak(
+                        barrier.x * Tile.SIZE,
+                        barrier.y * Tile.SIZE,
+                        barrier.width * Tile.SIZE,
+                        barrier.height * Tile.SIZE
+                    );
+                    this.addParticles(particles);
+
+                    // Tween barriers fading out
+                    barrier.opacity = 1.0;
+                    timer.tween(
+                        barrier,
+                        { opacity: 0 },
+                        0.5,
+                        Easing.linear,
+                        () => {
+                            barrier.active = false;
+                        }
+                    );
+                }
             });
 
             console.log(`Room ${this.roomNumber} cleared! Exits unlocked!`);
 
-            // Award bonus points for clearing room
             const bonusPoints = 50 + this.roomNumber * 10;
             this.addScore(bonusPoints);
             console.log(`+${bonusPoints} ROOM CLEAR BONUS!`);
         }
     }
 
-    /**
-     * Check if player is touching an exit zone
-     * @returns {object|null} Exit info if player is at exit, null otherwise
-     */
     checkPlayerAtExit() {
         if (!this.isCleared) {
-            return null; // Exits only work when room is cleared
+            return null;
         }
 
         const playerX = this.player.position.x;
@@ -369,9 +401,7 @@ export default class Room {
         const playerWidth = this.player.dimensions.x / Tile.SIZE;
         const playerHeight = this.player.dimensions.y / Tile.SIZE;
 
-        // Check each exit
         for (const exit of this.exits) {
-            // Check if player overlaps with exit zone
             if (
                 playerX < exit.x + exit.width &&
                 playerX + playerWidth > exit.x &&
@@ -388,17 +418,13 @@ export default class Room {
         return null;
     }
 
-    /**
-     * Check if a position is blocked by an active barrier
-     */
     isBlockedByBarrier(x, y) {
-        const width = 1; // Assuming 1 tile width for checking
+        const width = 1;
         const height = 1;
 
         for (const barrier of this.barriers) {
             if (!barrier.active) continue;
 
-            // Check if position overlaps with barrier
             if (
                 x < barrier.x + barrier.width &&
                 x + width > barrier.x &&
@@ -419,18 +445,10 @@ export default class Room {
         }
     }
 
-    /**
-     * Get the current score
-     * @returns {number}
-     */
     getScore() {
         return this.score;
     }
 
-    /**
-     * Add points to the score
-     * @param {number} points
-     */
     addScore(points) {
         this.score += points;
         console.log(`+${points} points! Total score: ${this.score}`);
