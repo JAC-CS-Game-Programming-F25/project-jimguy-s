@@ -6,9 +6,12 @@ import {
     context,
     input,
     stateMachine,
+    sounds,
 } from "../globals.js";
 import Input from "../../lib/Input.js";
 import GameStateName from "../enums/GameStateName.js";
+import SoundName from "../enums/SoundName.js";
+import MusicManager from "../services/MusicManager.js";
 import HighScoresState from "./HighScoresState.js";
 
 export default class VictoryState extends State {
@@ -21,6 +24,7 @@ export default class VictoryState extends State {
     }
 
     enter(params = {}) {
+        MusicManager.play(SoundName.VictoryMusic, { loop: true, volume: 0.25 });
         this.finalScore = params.score || 0;
 
         // Check if this is a high score
@@ -55,12 +59,28 @@ export default class VictoryState extends State {
         this.buttons[0].isHovered = true;
     }
 
+    exit() {
+        sounds.stop(SoundName.VictoryMusic);
+        if (GameStateName.Play) {
+            MusicManager.play(SoundName.PlayStateMusic, {
+                loop: true,
+                volume: 0.25,
+            });
+        } else {
+            MusicManager.play(SoundName.MainMenuMusic, {
+                loop: true,
+                volume: 0.25,
+            });
+        }
+    }
+
     update(dt) {
         // Navigate with up/down arrows or W/S
         if (
             input.isKeyPressed(Input.KEYS.ARROW_DOWN) ||
             input.isKeyPressed(Input.KEYS.S)
         ) {
+            sounds.play(SoundName.Select);
             this.buttons[this.selectedButtonIndex].isHovered = false;
             this.selectedButtonIndex =
                 (this.selectedButtonIndex + 1) % this.buttons.length;
@@ -71,6 +91,7 @@ export default class VictoryState extends State {
             input.isKeyPressed(Input.KEYS.ARROW_UP) ||
             input.isKeyPressed(Input.KEYS.W)
         ) {
+            sounds.play(SoundName.Select);
             this.buttons[this.selectedButtonIndex].isHovered = false;
             this.selectedButtonIndex =
                 (this.selectedButtonIndex - 1 + this.buttons.length) %
@@ -79,9 +100,8 @@ export default class VictoryState extends State {
         }
 
         // Activate selected button with Enter
-        if (
-            input.isKeyPressed(Input.KEYS.ENTER)
-        ) {
+        if (input.isKeyPressed(Input.KEYS.ENTER)) {
+            sounds.play(SoundName.Select);
             this.buttons[this.selectedButtonIndex].onClick();
         }
 

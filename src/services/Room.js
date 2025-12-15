@@ -30,7 +30,8 @@ export default class Room {
         roomDefinition,
         roomNumber = 1,
         previousScore = 0,
-        entranceDirection = null
+        entranceDirection = null,
+        playerData = null
     ) {
         this.objects = [];
 
@@ -72,6 +73,11 @@ export default class Room {
         const spawnPosition = this.getSpawnPosition(entranceDirection);
         this.player = new Player({ position: spawnPosition }, this);
 
+        if (playerData) {
+            this.player.health = playerData.health;
+            this.player.maxHealth = playerData.maxHealth;
+            this.player.damageBoost = playerData.damageBoost;
+        }
         // Score tracking
         this.score = previousScore;
 

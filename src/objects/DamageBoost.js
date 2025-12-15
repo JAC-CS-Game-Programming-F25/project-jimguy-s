@@ -1,8 +1,9 @@
 import Item from "./Item.js";
 import Sprite from "../../lib/Sprite.js";
 import ImageName from "../enums/ImageName.js";
-import { images } from "../globals.js";
+import { images, sounds} from "../globals.js";
 import Vector from "../../lib/Vector.js";
+import SoundName from "../enums/SoundName.js";
 
 export default class DamageBoost extends Item {
     static WIDTH = 6;
@@ -38,6 +39,7 @@ export default class DamageBoost extends Item {
      * @param {Player} player
      */
     applyEffect(player) {
+        sounds.play(SoundName.DamageBoostPickup);
         player.damageBoost = (player.damageBoost || 0) + this.damageIncrease;
 
         console.log(

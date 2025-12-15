@@ -6,9 +6,12 @@ import {
     context,
     input,
     stateMachine,
+    sounds,
 } from "../globals.js";
 import Input from "../../lib/Input.js";
 import GameStateName from "../enums/GameStateName.js";
+import SoundName from "../enums/SoundName.js";
+import MusicManager from "../services/MusicManager.js";
 
 export default class HighScoresState extends State {
     static MAX_SCORES = 5;
@@ -21,6 +24,10 @@ export default class HighScoresState extends State {
     }
 
     enter() {
+        MusicManager.play(SoundName.MainMenuMusic, {
+            loop: true,
+            volume: 0.25,
+        });
         this.loadHighScores();
 
         this.backButton = new Button(
@@ -34,10 +41,14 @@ export default class HighScoresState extends State {
         this.backButton.isHovered = true;
     }
 
+    exit() {
+        // Don't stop music - let MusicManager handle it
+        // Only stop if going to a state with different music
+    }
+
     update(dt) {
-        if (
-            input.isKeyPressed(Input.KEYS.ENTER)
-        ) {
+        if (input.isKeyPressed(Input.KEYS.ENTER)) {
+            sounds.play(SoundName.Select);
             this.backButton.onClick();
         }
 

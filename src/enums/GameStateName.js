@@ -6,7 +6,6 @@ const GameStateName = {
 	Instructions: 'instructions',
 	HighScores: 'high-scores',
 	Pause: 'pause',
-	GameOver: 'game-over'
 };
 
 export default GameStateName;

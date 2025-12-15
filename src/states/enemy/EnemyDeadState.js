@@ -73,6 +73,4 @@ export default class EnemyDeadState extends State {
 
         ctx.restore();
     }
-
-    exit() {}
 }

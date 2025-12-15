@@ -2,6 +2,9 @@ import Animation from "../../../lib/Animation.js";
 import State from "../../../lib/State.js";
 import Direction from "../../enums/Direction.js";
 import EnemyStateName from "../../enums/EnemyStateName.js";
+import SoundName from "../../enums/SoundName.js";
+import MusicManager from "../../services/MusicManager.js";
+import { sounds } from "../../globals.js";
 
 export default class EnemyAttackingState extends State {
     /**
@@ -31,6 +34,7 @@ export default class EnemyAttackingState extends State {
     }
 
     enter() {
+        sounds.play(SoundName.Attack);
         // Switch to attack sprites
         this.enemy.sprites = this.enemy.attackSprites;
 
