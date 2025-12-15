@@ -1,8 +1,9 @@
 import Item from "./Item.js";
 import Sprite from "../../lib/Sprite.js";
 import ImageName from "../enums/ImageName.js";
-import { images } from "../globals.js";
+import { images, sounds } from "../globals.js";
 import Vector from "../../lib/Vector.js";
+import SoundName from "../enums/SoundName.js";
 
 export default class HealthPotion extends Item {
     static WIDTH = 9;
@@ -38,6 +39,7 @@ export default class HealthPotion extends Item {
      * @param {Player} player
      */
     applyEffect(player) {
+        sounds.play(SoundName.HealthPickup);
         player.health = Math.min(
             player.health + this.healAmount,
             player.maxHealth

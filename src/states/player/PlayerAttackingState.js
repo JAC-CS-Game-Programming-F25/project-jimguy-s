@@ -4,6 +4,9 @@ import Player from "../../entities/Player.js";
 import Direction from "../../enums/Direction.js";
 import PlayerStateName from "../../enums/PlayerStateName.js";
 import Tile from "../../services/Tile.js";
+import SoundName from "../../enums/SoundName.js";
+import MusicManager from "../../services/MusicManager.js";
+import { sounds } from "../../globals.js";
 
 export default class PlayerAttackingState extends State {
     /**
@@ -33,6 +36,7 @@ export default class PlayerAttackingState extends State {
 
     enter() {
         console.log("=== ENTERING ATTACK STATE ===");
+        sounds.play(SoundName.Attack);
 
         // Switch to attack sprites
         this.player.sprites = this.player.attackSprites;

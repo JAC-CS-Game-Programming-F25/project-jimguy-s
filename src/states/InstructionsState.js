@@ -6,9 +6,12 @@ import {
     context,
     input,
     stateMachine,
+    sounds,
 } from "../globals.js";
 import Input from "../../lib/Input.js";
 import GameStateName from "../enums/GameStateName.js";
+import SoundName from "../enums/SoundName.js";
+import MusicManager from "../services/MusicManager.js";
 
 export default class InstructionsState extends State {
     constructor() {
@@ -17,6 +20,10 @@ export default class InstructionsState extends State {
     }
 
     enter() {
+        MusicManager.play(SoundName.MainMenuMusic, {
+            loop: true,
+            volume: 0.25,
+        });
         this.backButton = new Button(
             CANVAS_WIDTH / 2,
             CANVAS_HEIGHT - 15,
@@ -28,10 +35,14 @@ export default class InstructionsState extends State {
         this.backButton.isHovered = true;
     }
 
+    exit() {
+        // Don't stop music - let MusicManager handle it
+        // Only stop if going to a state with different music
+    }
+
     update(dt) {
-        if (
-            input.isKeyPressed(Input.KEYS.ENTER)
-        ) {
+        if (input.isKeyPressed(Input.KEYS.ENTER)) {
+            sounds.play(SoundName.Select);
             this.backButton.onClick();
         }
 

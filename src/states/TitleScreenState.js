@@ -1,18 +1,31 @@
 import State from "../../lib/State.js";
 import Button from "../services/UserInterface/Button.js";
-import { CANVAS_HEIGHT, CANVAS_WIDTH, context, input, stateMachine } from "../globals.js";
+import {
+    CANVAS_HEIGHT,
+    CANVAS_WIDTH,
+    context,
+    input,
+    stateMachine,
+    sounds,
+} from "../globals.js";
 import Input from "../../lib/Input.js";
 import GameStateName from "../enums/GameStateName.js";
+import SoundName from "../enums/SoundName.js";
+import MusicManager from "../services/MusicManager.js";
 
 export default class TitleScreenState extends State {
     constructor() {
         super();
-        
+
         this.buttons = [];
         this.selectedButtonIndex = 0;
     }
 
     enter() {
+        MusicManager.play(SoundName.MainMenuMusic, {
+            loop: true,
+            volume: 0.25,
+        });
         // Create buttons
         const buttonWidth = 120;
         const buttonHeight = 30;
@@ -44,57 +57,82 @@ export default class TitleScreenState extends State {
                 buttonHeight,
                 "High Scores",
                 () => stateMachine.change(GameStateName.HighScores)
-            )
+            ),
         ];
 
         this.selectedButtonIndex = 0;
         this.buttons[0].isHovered = true;
     }
 
+    exit() {
+        // Don't stop music - let MusicManager handle it
+        // Only stop if going to a state with different music
+    }
+
     update(dt) {
         // Navigate with up/down arrows or W/S
-        if (input.isKeyPressed(Input.KEYS.ARROW_DOWN) || input.isKeyPressed(Input.KEYS.S)) {
+        if (
+            input.isKeyPressed(Input.KEYS.ARROW_DOWN) ||
+            input.isKeyPressed(Input.KEYS.S)
+        ) {
+            sounds.play(SoundName.Select);
             this.buttons[this.selectedButtonIndex].isHovered = false;
-            this.selectedButtonIndex = (this.selectedButtonIndex + 1) % this.buttons.length;
+            this.selectedButtonIndex =
+                (this.selectedButtonIndex + 1) % this.buttons.length;
             this.buttons[this.selectedButtonIndex].isHovered = true;
         }
-        
-        if (input.isKeyPressed(Input.KEYS.ARROW_UP) || input.isKeyPressed(Input.KEYS.W)) {
+
+        if (
+            input.isKeyPressed(Input.KEYS.ARROW_UP) ||
+            input.isKeyPressed(Input.KEYS.W)
+        ) {
+            sounds.play(SoundName.Select);
             this.buttons[this.selectedButtonIndex].isHovered = false;
-            this.selectedButtonIndex = (this.selectedButtonIndex - 1 + this.buttons.length) % this.buttons.length;
+            this.selectedButtonIndex =
+                (this.selectedButtonIndex - 1 + this.buttons.length) %
+                this.buttons.length;
             this.buttons[this.selectedButtonIndex].isHovered = true;
         }
 
         // Activate selected button with Enter
         if (input.isKeyPressed(Input.KEYS.ENTER)) {
+            sounds.play(SoundName.Select);
             this.buttons[this.selectedButtonIndex].onClick();
         }
 
-        this.buttons.forEach(button => button.update());
+        this.buttons.forEach((button) => button.update());
     }
 
     render() {
         context.save();
 
         // Draw background (simple dark background)
-        context.fillStyle = '#1a1a2e';
+        context.fillStyle = "#1a1a2e";
         context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
         // Draw title
-        context.fillStyle = 'white';
-        context.font = '24px gameFont';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        context.fillText('Blades of the Dune', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 8);
+        context.fillStyle = "white";
+        context.font = "24px gameFont";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(
+            "Blades of the Dune",
+            CANVAS_WIDTH / 2,
+            CANVAS_HEIGHT / 8
+        );
 
         // Draw subtitle or version
-        context.font = '12px gameFont';
-        context.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        context.fillText('Press ENTER to select', CANVAS_WIDTH / 2, CANVAS_HEIGHT - 20);
+        context.font = "12px gameFont";
+        context.fillStyle = "rgba(255, 255, 255, 0.7)";
+        context.fillText(
+            "Press ENTER to select",
+            CANVAS_WIDTH / 2,
+            CANVAS_HEIGHT - 20
+        );
 
         context.restore();
 
         // Draw buttons
-        this.buttons.forEach(button => button.render());
+        this.buttons.forEach((button) => button.render());
     }
 }

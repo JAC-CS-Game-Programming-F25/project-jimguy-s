@@ -15,10 +15,6 @@ export default class PlayerDeadState extends State {
             [Direction.Left]: new Animation([0], 1),
             [Direction.Right]: new Animation([0], 1),
         };
-
-        this.deathTimer = 0;
-        this.deathDuration = 1.0;
-        this.transitionDelay = 1.0;
     }
 
     enter() {
@@ -26,22 +22,8 @@ export default class PlayerDeadState extends State {
         this.player.currentAnimation = this.animation[this.player.direction];
         this.player.currentAnimation.refresh();
         this.player.currentFrame = 0;
-
-        this.deathTimer = 0;
-
+                
         console.log("Player died! Death animation playing...");
     }
 
-    update(dt) {
-        this.deathTimer += dt;
-
-        if (this.deathTimer >= this.deathDuration + this.transitionDelay) {
-            console.log("Transitioning to Game Over...");
-            // TODO: Transition to Game Over state
-        }
-    }
-
-    exit() {
-        console.log("Player death state exit");
-    }
 }

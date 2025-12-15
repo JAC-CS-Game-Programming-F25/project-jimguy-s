@@ -144,5 +144,76 @@
             "path": "../assets/fonts/NormalFont.ttf"
         }
     ],
-    "sounds": []
+    "sounds": [
+        {
+            "name": "main-menu-music",
+            "path": "../assets/sounds/MainMenu.ogg",
+            "volume": 0.4,
+            "loop": true,
+            "size": 1
+        },
+        {
+            "name": "pause-music",
+            "path": "../assets/sounds/Pause.ogg",
+            "volume": 0.3,
+            "loop": true,
+            "size": 1
+        },
+        {
+            "name": "play-state-music",
+            "path": "../assets/sounds/PlayState.ogg",
+            "volume": 0.5,
+            "loop": true,
+            "size": 1
+        },
+        {
+            "name": "game-over-music",
+            "path": "../assets/sounds/GameOver.ogg",
+            "volume": 0.5,
+            "loop": true,
+            "size": 1
+        },
+        {
+            "name": "victory-music",
+            "path": "../assets/sounds/Victory.ogg",
+            "volume": 0.5,
+            "loop": true,
+            "size": 1
+        },
+        {
+            "name": "attack-sound",
+            "path": "../assets/sounds/Impact.wav",
+            "volume": 0.6,
+            "loop": false,
+            "size": 3
+        },
+        {
+            "name": "death-sound",
+            "path": "../assets/sounds/Death.wav",
+            "volume": 0.5,
+            "loop": false,
+            "size": 3
+        },
+        {
+            "name": "select-sound",
+            "path": "../assets/sounds/Select.wav",
+            "volume": 0.5,
+            "loop": false,
+            "size": 2
+        },
+        {
+            "name": "damage-boost-pickup",
+            "path": "../assets/sounds/DamageBoost.wav",
+            "volume": 0.6,
+            "loop": false,
+            "size": 2
+        },
+        {
+            "name": "health-pickup",
+            "path": "../assets/sounds/HealthBoost.wav",
+            "volume": 0.6,
+            "loop": false,
+            "size": 2
+        }
+    ]
 }

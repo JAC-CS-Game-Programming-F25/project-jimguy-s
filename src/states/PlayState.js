@@ -1,8 +1,11 @@
 import State from "../../lib/State.js";
 import Room from "../services/Room.js";
 import GameStateName from "../enums/GameStateName.js";
-import { input, stateMachine } from "../globals.js";
+import { input, stateMachine, sounds } from "../globals.js";
 import Input from "../../lib/Input.js";
+import SoundName from "../enums/SoundName.js";
+import MusicManager from "../services/MusicManager.js";
+import DamageBoost from "../objects/DamageBoost.js";
 
 export default class PlayState extends State {
     static TOTAL_ROOMS = 5;
@@ -17,10 +20,15 @@ export default class PlayState extends State {
             return;
         }
 
+        MusicManager.play(SoundName.PlayStateMusic, {
+            loop: true,
+            volume: 0.25,
+        });
         // Reset game state when starting new game
         this.currentRoomNumber = 1;
         this.score = 0;
         this.room = null;
+        this.playerData = null;
 
         // Load first room
         this.loadRoom(1, null);
@@ -42,7 +50,8 @@ export default class PlayState extends State {
                 roomDefinition,
                 roomNumber,
                 this.score,
-                entranceDirection
+                entranceDirection,
+                this.playerData
             );
             this.currentRoomNumber = roomNumber;
 
@@ -55,6 +64,7 @@ export default class PlayState extends State {
     update(dt) {
         // Check for pause
         if (input.isKeyPressed(Input.KEYS.ESCAPE)) {
+            sounds.play(SoundName.Select);
             stateMachine.change(GameStateName.Pause);
             return;
         }
@@ -88,6 +98,12 @@ export default class PlayState extends State {
 
                 // Update score before transitioning
                 this.score = this.room.getScore();
+
+                this.playerData = {
+                    health: this.room.player.health,
+                    maxHealth: this.room.player.maxHealth,
+                    damageBoost: this.room.player.damageBoost,
+                };
 
                 // Load the next room
                 console.log(`Transitioning to room ${nextRoom}...`);

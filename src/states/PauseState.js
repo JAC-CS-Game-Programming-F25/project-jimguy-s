@@ -6,9 +6,12 @@ import {
     context,
     input,
     stateMachine,
+    sounds,
 } from "../globals.js";
 import Input from "../../lib/Input.js";
 import GameStateName from "../enums/GameStateName.js";
+import SoundName from "../enums/SoundName.js";
+import MusicManager from "../services/MusicManager.js";
 
 export default class PauseState extends State {
     constructor() {
@@ -18,6 +21,7 @@ export default class PauseState extends State {
     }
 
     enter(params = {}) {
+        MusicManager.play(SoundName.PauseMusic, { loop: true, volume: 0.05 });
         const buttonWidth = 140;
         const buttonHeight = 35;
         const centerX = CANVAS_WIDTH / 2;
@@ -48,6 +52,14 @@ export default class PauseState extends State {
         this.buttons[0].isHovered = true;
     }
 
+    exit() {
+        sounds.stop(SoundName.PauseMusic);
+        MusicManager.play(SoundName.PlayStateMusic, {
+            loop: true,
+            volume: 0.25,
+        });
+    }
+
     update(dt) {
         // ESC to resume
         if (input.isKeyPressed(Input.KEYS.ESCAPE)) {
@@ -60,6 +72,7 @@ export default class PauseState extends State {
             input.isKeyPressed(Input.KEYS.ARROW_DOWN) ||
             input.isKeyPressed(Input.KEYS.S)
         ) {
+            sounds.play(SoundName.Select);
             this.buttons[this.selectedButtonIndex].isHovered = false;
             this.selectedButtonIndex =
                 (this.selectedButtonIndex + 1) % this.buttons.length;
@@ -70,6 +83,7 @@ export default class PauseState extends State {
             input.isKeyPressed(Input.KEYS.ARROW_UP) ||
             input.isKeyPressed(Input.KEYS.W)
         ) {
+            sounds.play(SoundName.Select);
             this.buttons[this.selectedButtonIndex].isHovered = false;
             this.selectedButtonIndex =
                 (this.selectedButtonIndex - 1 + this.buttons.length) %
@@ -78,9 +92,8 @@ export default class PauseState extends State {
         }
 
         // Activate selected button with Enter
-        if (
-            input.isKeyPressed(Input.KEYS.ENTER)
-        ) {
+        if (input.isKeyPressed(Input.KEYS.ENTER)) {
+            sounds.play(SoundName.Select);
             this.buttons[this.selectedButtonIndex].onClick();
         }
 

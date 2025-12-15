@@ -17,6 +17,7 @@ import {
     images,
     stateMachine,
     timer,
+    sounds
 } from "./globals.js";
 
 // Set the dimensions of the play area.
@@ -28,12 +29,13 @@ canvas.setAttribute("tabindex", "1");
 document.body.appendChild(canvas);
 
 // Load assets
-const { images: imageDefinitions, fonts: fontDefinitions } = await fetch(
+const { images: imageDefinitions, fonts: fontDefinitions, sounds: soundDefinitions } = await fetch(
     "../src/config.json"
 ).then((response) => response.json());
 
 images.load(imageDefinitions);
 fonts.load(fontDefinitions);
+sounds.load(soundDefinitions);
 
 // Add states
 stateMachine.add(GameStateName.TitleScreen, new TitleScreenState());

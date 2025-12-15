@@ -123,6 +123,39 @@ export default class PlayerWalkingState extends State {
     }
 
     /**
+     * Check if player would collide with any enemy at the given position
+     * @param {number} x - Grid position
+     * @param {number} y - Grid position
+     * @returns {boolean} - True if would collide with an enemy
+     */
+    wouldCollideWithEnemy(x, y) {
+        const playerWidth = this.player.dimensions.x / Tile.SIZE;
+        const playerHeight = this.player.dimensions.y / Tile.SIZE;
+
+        for (const enemy of this.player.room.enemies) {
+            // Skip dead enemies
+            if (enemy.isDead) continue;
+
+            const enemyX = enemy.position.x;
+            const enemyY = enemy.position.y;
+            const enemyWidth = enemy.dimensions.x / Tile.SIZE;
+            const enemyHeight = enemy.dimensions.y / Tile.SIZE;
+
+            // AABB collision detection
+            if (
+                x < enemyX + enemyWidth &&
+                x + playerWidth > enemyX &&
+                y < enemyY + enemyHeight &&
+                y + playerHeight > enemyY
+            ) {
+                return true; // Collision detected
+            }
+        }
+
+        return false; // No collision
+    }
+
+    /**
      * @param {number} x Grid position (not pixels)
      * @param {number} y Grid position (not pixels)
      * @returns Whether the player can move to this position
@@ -145,6 +178,11 @@ export default class PlayerWalkingState extends State {
 
         // Check if blocked by barrier
         if (this.player.room.isBlockedByBarrier(x, y)) {
+            return false;
+        }
+
+        // Check if would collide with enemies  ← ADD THIS
+        if (this.wouldCollideWithEnemy(x, y)) {
             return false;
         }
 
